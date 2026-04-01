@@ -1,0 +1,40 @@
+{
+  "name": "api-ecommerce-rucas",
+  "version": "1.0.0",
+  "description": "api for application ecommerce rucas",
+  "license": "ISC",
+  "author": "Yazid Khairul Rizal",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.15.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-fileupload": "^1.5.0",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "redis": "^5.11.0",
+    "uuid": "^13.0.0",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-syntax-import-meta": "^7.10.4",
+    "@babel/preset-env": "^7.28.6",
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "@types/uuid": "^10.0.0",
+    "babel-jest": "^30.2.0",
+    "babel-plugin-transform-import-meta": "^2.3.3",
+    "jest": "^30.2.0",
+    "prisma": "^4.15.0",
+    "supertest": "^7.2.2"
+  }
+
+}
