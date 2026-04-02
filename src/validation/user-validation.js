@@ -12,6 +12,12 @@ const createUserValidation = Joi.object({
     address: Joi.string().max(255).required()
 })
 
+const loginUserValidation = Joi.object({
+    email: Joi.string().email().max(50).required(),
+    password: Joi.string().max(255).required()
+})
+
 export {
-    createUserValidation
+    createUserValidation,
+    loginUserValidation
 }

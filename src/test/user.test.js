@@ -2,6 +2,7 @@ import prismaClient from "../application/database.js"
 import request from "supertest"
 import { web } from "../application/web.js"
 import { depth } from "../application/logging.js"
+import testUtil from "./test-util.js"
 
 jest.mock("googleapis", () => {
     return {
@@ -204,3 +205,74 @@ describe("GET /auth/google/callback", () => {
     })
 })
 
+describe("POST /api/users/login", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestUser()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+    })
+
+    it("should success login", async () => {
+        
+        const response = await request(web).post("/api/users/login")
+                                .set("Content-Type","application/json")
+                                .send({
+                                    email: "yazid@gmail.com",
+                                    password: "password"
+                                })
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data.email).toBe("yazid@gmail.com")
+        expect(response.get("set-cookie")).toBeDefined()
+    })
+
+    it("should reject if email not found", async () => {
+        
+        const response = await request(web).post("/api/users/login")
+                                .set("Content-Type","application/json")
+                                .send({
+                                    email: "notfound@gmail.com",
+                                    password: "password"
+                                })
+
+        depth(response.body)
+
+        expect(response.status).toBe(401)
+        expect(response.body.errors).toBeDefined()
+    })
+
+    it("should reject if password is wrong", async () => {
+        
+        const response = await request(web).post("/api/users/login")
+                                .set("Content-Type","application/json")
+                                .send({
+                                    email: "yazid@gmail.com",
+                                    password: "wrongpassword"
+                                })
+
+        depth(response.body)
+
+        expect(response.status).toBe(401)
+        expect(response.body.errors).toBeDefined()
+    })
+
+    it("should reject if email is not valid", async () => {
+        
+        const response = await request(web).post("/api/users/login")
+                                .set("Content-Type","application/json")
+                                .send({
+                                    email: "yazid",
+                                    password: "wrongpassword"
+                                })
+
+        depth(response.body)
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toBeDefined()
+    })
+})

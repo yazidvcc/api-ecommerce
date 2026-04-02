@@ -2,9 +2,9 @@ import prismaClient from "../application/database.js"
 import ResponseError from "../error/response-error.js"
 import validate from "../validation/validation.js"
 import bcrypt from "bcrypt"
-import { createUserValidation } from "../validation/user-validation.js"
-import { google } from "googleapis"
 import jwt from "jsonwebtoken"
+import { createUserValidation, loginUserValidation } from "../validation/user-validation.js"
+import { google } from "googleapis"
 
 const oauth2client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -119,8 +119,50 @@ const googleAuthorized = async (code) => {
     }
 }
 
+const login = async (request) => {
+    
+    request = validate(loginUserValidation, request)
+
+    const user = await prismaClient.user.findUnique({
+        where: {
+            email: request.email
+        }
+    })
+
+    if (!user) {
+        throw new ResponseError(401, "email or password is wrong")
+    }
+
+    const isPasswordValid = await bcrypt.compare(request.password, user.password)
+
+    if (!isPasswordValid) {
+        throw new ResponseError(401, "email or password is wrong")
+    }
+
+    const token = jwt.sign(
+        {
+            id: user.id,
+            email: user.email
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: "7d"
+        }
+    )
+
+    return {
+        data: {
+            id: user.id,
+            email: user.email
+        },
+        token: token
+    }
+
+}
+
 export default {
     create,
     authorizationUrl,
-    googleAuthorized
+    googleAuthorized,
+    login
 }
