@@ -13,7 +13,7 @@ const errorMiddleware = async (error, req, res, next) => {
         }).end()
     } else {
         res.status(500).json({
-            errors: "SERVER ERROR"
+            errors: error.message
         }).end()
     }
 }
