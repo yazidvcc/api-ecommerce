@@ -35,8 +35,27 @@ const googleCallback = async (req, res, next) => {
     }
 }
 
+const login = async (req, res, next) => {
+    
+    try {
+        const result = await userService.login(req.body)
+        res.cookie("token", result.token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        })
+        res.status(200).json({
+            data: result.data
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
     create,
     google,
-    googleCallback
+    googleCallback,
+    login
 }
