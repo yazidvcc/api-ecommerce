@@ -110,10 +110,19 @@ const googleAuthorized = async (code) => {
         }
     )
 
+    await prismaClient.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            token: token
+        }
+    })
+
     return {
         data: {
             id: user.id,
-            name: user.name
+            email: user.email
         },
         token: token
     }
@@ -150,6 +159,15 @@ const login = async (request) => {
         }
     )
 
+    await prismaClient.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            token: token
+        }
+    })
+
     return {
         data: {
             id: user.id,
@@ -160,9 +178,23 @@ const login = async (request) => {
 
 }
 
+const logout = async (userId) => {
+    await prismaClient.user.update({
+        where: {
+            id: userId
+        },
+        data: {
+            token: null
+        }
+    })  
+
+    return "OK"
+}
+
 export default {
     create,
     authorizationUrl,
     googleAuthorized,
-    login
+    login,
+    logout
 }

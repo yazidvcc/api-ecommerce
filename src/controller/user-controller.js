@@ -53,9 +53,23 @@ const login = async (req, res, next) => {
     }
 }
 
+const logout = async (req, res, next) => {
+    
+    try {
+        const result = await userService.logout(req.user.id)
+        res.clearCookie('token')
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+} 
+
 export default {
     create,
     google,
     googleCallback,
-    login
+    login,
+    logout
 }
