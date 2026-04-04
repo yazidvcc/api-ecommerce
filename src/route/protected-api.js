@@ -1,5 +1,10 @@
 import express from "express"
+import authMiddleware from "../middleware/auth-middleware.js"
+import userController from "../controller/user-controller.js"
 
-const userRouter = express.Router()
+const protectedRouter = express.Router()
+protectedRouter.use(authMiddleware)
 
-export default userRouter
+protectedRouter.post("/api/users/logout", userController.logout)
+
+export default protectedRouter

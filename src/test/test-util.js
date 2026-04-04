@@ -1,5 +1,7 @@
 import prismaClient from "../application/database"
 import bcrypt from "bcrypt"
+import request from "supertest"
+import { web } from "../application/web.js"
 
 const createTestUser = async () => {
 
@@ -17,6 +19,16 @@ const createTestUser = async () => {
     })
 }
 
+const login = async () => {
+    return await request(web).post("/api/users/login")
+                .set("Content-Type","application/json")
+                .send({
+                    email: "yazid@gmail.com",
+                    password: "password"
+                })
+}
+
 export default {
-    createTestUser
+    createTestUser,
+    login
 }

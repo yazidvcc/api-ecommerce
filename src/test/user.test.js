@@ -276,3 +276,41 @@ describe("POST /api/users/login", () => {
         expect(response.body.errors).toBeDefined()
     })
 })
+
+
+
+describe("POST /api/users/logout", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestUser()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+    })
+
+    it("should success logout", async () => {
+
+        const userLogin = await testUtil.login()
+        const cookie = userLogin.get("Set-Cookie")
+        
+        const response = await request(web).post("/api/users/logout")
+                                .set("Cookie", cookie)
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toBe("OK")
+    })
+
+    it("should unauthorized if cookie is not found", async () => {
+        
+        const response = await request(web).post("/api/users/logout")
+
+        depth(response.body)
+
+        expect(response.status).toBe(401)
+        expect(response.body.errors).toBe("Unauthorized")
+    })
+
+})
