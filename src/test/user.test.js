@@ -277,8 +277,6 @@ describe("POST /api/users/login", () => {
     })
 })
 
-
-
 describe("POST /api/users/logout", () => {
 
     beforeEach(async () => {
@@ -313,4 +311,38 @@ describe("POST /api/users/logout", () => {
         expect(response.body.errors).toBe("Unauthorized")
     })
 
+})
+
+describe("GET /api/users/current", () => {
+    beforeEach(async () => {
+        await testUtil.createTestUser()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+    })
+
+    it("should success get current user", async () => {
+        
+        const userLogin = await testUtil.login()
+        const cookie = userLogin.get("Set-Cookie")
+
+        const response = await request(web).get("/api/users/current")
+                                .set("Cookie", cookie)
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data.email).toBe("yazid@gmail.com")
+    })
+
+    it("should reject get current user if cookie is not found", async () => {
+        
+        const response = await request(web).get("/api/users/current")
+
+        depth(response.body)
+
+        expect(response.status).toBe(401)
+        expect(response.body.errors).toBe("Unauthorized")
+    })
 })

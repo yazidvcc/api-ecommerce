@@ -191,10 +191,26 @@ const logout = async (userId) => {
     return "OK"
 }
 
+const get = async (userId) => {
+    return await prismaClient.user.findUnique({
+        where: {
+            id: userId
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            address: true,
+            phone: true
+        }
+    })
+}
+
 export default {
     create,
     authorizationUrl,
     googleAuthorized,
     login,
-    logout
+    logout,
+    get
 }
