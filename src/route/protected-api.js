@@ -19,4 +19,8 @@ protectedRouter.post("/api/admin/categories", categoryController.create)
 protectedRouter.put("/api/admin/categories/:categoryId", categoryController.update)
 protectedRouter.delete("/api/admin/categories/:categoryId", categoryController.remove)
 
+protectedRouter.post("/api/admin/colors", colorController.create)
+protectedRouter.put("/api/admin/colors/:colorId", colorController.update)
+protectedRouter.delete("/api/admin/colors/:colorId", colorController.remove)
+
 export default protectedRouter
