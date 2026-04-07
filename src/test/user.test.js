@@ -208,7 +208,7 @@ describe("GET /auth/google/callback", () => {
 describe("POST /api/users/login", () => {
 
     beforeEach(async () => {
-        await testUtil.createTestUser()
+        await testUtil.createTestCustomer()
     })
 
     afterEach(async () => {
@@ -280,7 +280,7 @@ describe("POST /api/users/login", () => {
 describe("POST /api/users/logout", () => {
 
     beforeEach(async () => {
-        await testUtil.createTestUser()
+        await testUtil.createTestCustomer()
     })
 
     afterEach(async () => {
@@ -315,7 +315,7 @@ describe("POST /api/users/logout", () => {
 
 describe("GET /api/users/current", () => {
     beforeEach(async () => {
-        await testUtil.createTestUser()
+        await testUtil.createTestCustomer()
     })
 
     afterEach(async () => {
