@@ -7,6 +7,7 @@ const roleMiddleware = async (req, res, next) => {
             })
         }
         next()
+        return
     }
 
     if (req.user.role !== "CUSTOMER") {
