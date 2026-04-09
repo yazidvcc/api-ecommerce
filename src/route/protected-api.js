@@ -23,4 +23,8 @@ protectedRouter.post("/api/admin/colors", colorController.create)
 protectedRouter.put("/api/admin/colors/:colorId", colorController.update)
 protectedRouter.delete("/api/admin/colors/:colorId", colorController.remove)
 
+protectedRouter.post("/api/admin/sizes", sizeController.create)
+protectedRouter.put("/api/admin/sizes/:sizeId", sizeController.update)
+protectedRouter.delete("/api/admin/sizes/:sizeId", sizeController.remove)
+
 export default protectedRouter
