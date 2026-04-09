@@ -73,10 +73,64 @@ const createManyTestCategory = async () => {
     })
 }
 
+const createTestColor = async () => {
+    return await prismaClient.color.create({
+        data: {
+            name: "Test"
+        },
+        select: {
+            id: true,
+            name: true
+        }
+    })
+}
+
+const createManyTestColors = async () => {
+    const colors = []
+    for (let i = 0; i < 10; i++) {
+        colors.push({
+            name: `test ${i}`
+        })
+    }
+
+    return await prismaClient.color.createMany({
+        data: colors,
+    })
+}
+
+const createTestSize = async () => {
+    return await prismaClient.size.create({
+        data: {
+            label: "Test"
+        },
+        select: {
+            id: true,
+            label: true
+        }
+    })
+}
+
+const createManyTestSizes = async () => {
+    const sizes = []
+    for (let i = 0; i < 10; i++) {
+        sizes.push({
+            label: `test ${i}`
+        })
+    }
+
+    return await prismaClient.size.createMany({
+        data: sizes
+    })
+}
+
 export default {
     createTestCustomer,
     createTestAdmin,
     createTestCategory,
     createManyTestCategory, 
+    createTestColor,
+    createManyTestColors,
+    createTestSize,
+    createManyTestSizes,
     login
 }
