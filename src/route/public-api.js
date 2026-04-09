@@ -17,4 +17,6 @@ publicRouter.get("/api/categories/:categoryId", categoryController.get);
 publicRouter.get("/api/colors", colorController.search);
 publicRouter.get("/api/colors/:colorId", colorController.get);
 
+publicRouter.get("/api/sizes", sizeController.search);
+publicRouter.get("/api/sizes/:sizeId", sizeController.get);
 export default publicRouter
