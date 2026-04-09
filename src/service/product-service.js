@@ -17,6 +17,14 @@ const create = async (request) => {
         throw new ResponseError(400, "Product already exists")
     }
 
+    request.productVariants = {
+        createMany: {
+            data: request.product_variants
+        }
+    }
+
+    request.product_variants = undefined
+
     return await prismaClient.product.create({
         data: request,
         select: {
@@ -25,10 +33,10 @@ const create = async (request) => {
             description: true,
             category_id: true,
             createdAt: true,
-            updatedAt: true
+            updatedAt: true,
+            productVariants: true
         }
     })
-
 }
 
 export default {

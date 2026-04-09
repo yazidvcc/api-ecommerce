@@ -11,6 +11,9 @@ describe("POST /api/admin/products", () => {
 
     afterEach(async () => {
         await prismaClient.user.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
         await prismaClient.product.deleteMany()
         await prismaClient.category.deleteMany()
     })
@@ -18,6 +21,7 @@ describe("POST /api/admin/products", () => {
     it("Should success create product", async () => {
         const adminLogin = await testUtil.login()
         const category = await testUtil.createTestCategory()
+        const productVariants = await testUtil.dummyManyProductVariant()
 
         const response = await request(web).post("/api/admin/products")
                          .set("Cookie", adminLogin.get("Set-Cookie"))
@@ -25,7 +29,8 @@ describe("POST /api/admin/products", () => {
                          .send({
                             name: "product 1",
                             description: "description 1",
-                            category_id: category.id
+                            category_id: category.id,
+                            product_variants: productVariants
                          })
         
         depth(response.body)
@@ -34,6 +39,7 @@ describe("POST /api/admin/products", () => {
         expect(response.body.data.name).toBe("product 1")
         expect(response.body.data.description).toBe("description 1")
         expect(response.body.data.category_id).toBe(category.id)
+        expect(response.body.data.productVariants).toBeDefined()
     })
 
     it("Should reject if name is not provided", async () => {
