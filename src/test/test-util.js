@@ -123,6 +123,25 @@ const createManyTestSizes = async () => {
     })
 }
 
+const createTestProduct = async () => {
+
+    const category = await createTestCategory()
+
+    return await prismaClient.product.create({
+        data: {
+            name: "Test",
+            description: "Test",
+            category_id: category.id
+        },
+        select: {
+            id: true,
+            name: true,
+            description: true,
+            category_id: true
+        }
+    })
+}
+
 export default {
     createTestCustomer,
     createTestAdmin,
@@ -132,5 +151,6 @@ export default {
     createManyTestColors,
     createTestSize,
     createManyTestSizes,
+    createTestProduct,
     login
 }

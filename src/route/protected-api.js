@@ -5,6 +5,7 @@ import categoryController from "../controller/category-controller.js"
 import colorController from "../controller/color-controller.js"
 import sizeController from "../controller/size-controller.js"
 import roleMiddleware from "../middleware/role-middleware.js"
+import productController from "../controller/product-controller.js"
 
 const protectedRouter = express.Router()
 
@@ -26,5 +27,7 @@ protectedRouter.delete("/api/admin/colors/:colorId", colorController.remove)
 protectedRouter.post("/api/admin/sizes", sizeController.create)
 protectedRouter.put("/api/admin/sizes/:sizeId", sizeController.update)
 protectedRouter.delete("/api/admin/sizes/:sizeId", sizeController.remove)
+
+protectedRouter.post("/api/admin/products", productController.create)
 
 export default protectedRouter
