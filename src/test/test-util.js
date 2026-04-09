@@ -87,7 +87,7 @@ const createTestColor = async () => {
 
 const createManyTestColors = async () => {
     const colors = []
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 6; i++) {
         colors.push({
             name: `test ${i}`
         })
@@ -112,7 +112,7 @@ const createTestSize = async () => {
 
 const createManyTestSizes = async () => {
     const sizes = []
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 6; i++) {
         sizes.push({
             label: `test ${i}`
         })
@@ -142,6 +142,30 @@ const createTestProduct = async () => {
     })
 }
 
+const dummyManyProductVariant = async () => {
+
+    await createManyTestColors()
+    await createManyTestSizes()
+
+    const colors = await prismaClient.color.findMany()
+    const sizes = await prismaClient.size.findMany()
+
+    const productVariants = []
+    for (const color of colors) {
+        for (const size of sizes) {
+            productVariants.push({
+                color_id: color.id,
+                size_id: size.id,
+                price: 100000,
+                stock: 10
+            })
+        }
+    }
+
+    return productVariants
+
+}
+
 export default {
     createTestCustomer,
     createTestAdmin,
@@ -152,5 +176,6 @@ export default {
     createTestSize,
     createManyTestSizes,
     createTestProduct,
+    dummyManyProductVariant,
     login
 }
