@@ -23,7 +23,24 @@ const update = async (req, res, next) => {
         next(e)
     }
 }
+
+const updateProductVariant = async (req, res, next) => {
+    try {
+        const productId = parseInt(req.params.productId)
+        const productVariantId = parseInt(req.params.productVariantId)
+        req.body.id = productVariantId
+        req.body.product_id = productId
+        const result = await productService.updateProductVariant(req.body)
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
     create,
-    update
+    update,
+    updateProductVariant
 }
