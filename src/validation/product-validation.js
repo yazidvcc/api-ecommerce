@@ -19,6 +19,8 @@ const updateProductValidation = Joi.object({
     category_id: Joi.number().required()
 })
 
+const idProductValidation = Joi.number().positive().required()
+
 const updateProductVariantValidation = Joi.object({
     id: Joi.number().positive().required(),
     product_id: Joi.number().positive().required(),
@@ -29,5 +31,6 @@ const updateProductVariantValidation = Joi.object({
 export {
     createProductValidation,
     updateProductValidation,
+    idProductValidation,
     updateProductVariantValidation
 }

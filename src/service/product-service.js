@@ -1,7 +1,7 @@
 import { request } from "express"
 import prismaClient from "../application/database"
 import ResponseError from "../error/response-error"
-import { createProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation"
+import { createProductValidation, idProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation"
 import validate from "../validation/validation"
 
 const create = async (request) => {
@@ -100,6 +100,31 @@ const update = async (request) => {
     })
 }
 
+const remove = async (productId) => {
+    
+    productId = validate(idProductValidation, productId)
+
+    await prismaClient.$transaction(async (tx) => {
+        const countProduct = await tx.product.count({
+            where: {
+                id: productId
+            }
+        })
+
+        if (countProduct === 0) {
+            throw new ResponseError(404, "Product not found")
+        }
+
+        return await tx.product.delete({
+            where: {
+                id: productId
+            }
+        })
+    })
+
+    return "OK"
+}
+
 const updateProductVariant = async (request) => {
     
     request = validate(updateProductVariantValidation, request)
@@ -144,5 +169,6 @@ const updateProductVariant = async (request) => {
 export default {
     create,
     update,
+    remove,
     updateProductVariant
 }
