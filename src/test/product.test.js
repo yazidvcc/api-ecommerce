@@ -209,3 +209,73 @@ describe("PUT /api/admin/products/productId", () => {
     })
 
 })
+
+describe("PUT /api/admin/products/productId/product-variants/productVariantId", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestAdmin()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+    })
+
+    it("Should success update product variant", async () => {
+        const adminLogin = await testUtil.login()
+        const productVariant = await testUtil.createTestProductVariant()
+
+        const response = await request(web).put(`/api/admin/products/${productVariant.product_id}/product-variants/${productVariant.id}`)
+                         .set("Cookie", adminLogin.get("Set-Cookie"))
+                         .set("Content-Type", "application/json")
+                         .send({
+                            price: 2000000,
+                            stock: 50
+                         })
+        
+        depth(response.body)
+        
+        expect(response.status).toBe(200)
+        expect(response.body.data.price).toBe(2000000)
+        expect(response.body.data.stock).toBe(50)
+    })
+
+    it("Should reject if product variant id is not found", async () => {
+        const adminLogin = await testUtil.login()
+        const productVariant = await testUtil.createTestProductVariant()
+
+        const response = await request(web).put(`/api/admin/products/${productVariant.id}/product-variants/99999`)
+                         .set("Cookie", adminLogin.get("Set-Cookie"))
+                         .set("Content-Type", "application/json")
+                         .send({
+                            price: 2000000,
+                            stock: 50
+                         })
+        
+        depth(response.body)
+        
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+
+    it("Should reject stock or price is null", async () => {
+        const adminLogin = await testUtil.login()
+        const productVariant = await testUtil.createTestProductVariant()
+
+        const response = await request(web).put(`/api/admin/products/${productVariant.id}/product-variants/99999`)
+                         .set("Cookie", adminLogin.get("Set-Cookie"))
+                         .set("Content-Type", "application/json")
+                         .send({
+                            stock: 50
+                         })
+        
+        depth(response.body)
+        
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toBeDefined()
+    })
+})
