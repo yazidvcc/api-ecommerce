@@ -32,5 +32,6 @@ protectedRouter.post("/api/admin/products", productController.create)
 protectedRouter.put("/api/admin/products/:productId", productController.update)
 protectedRouter.delete("/api/admin/products/:productId", productController.remove)
 protectedRouter.put("/api/admin/products/:productId/product-variants/:productVariantId", productController.updateProductVariant)
+protectedRouter.delete("/api/admin/products/:productId/product-variants/:productVariantId", productController.removeProductVariant)
 
 export default protectedRouter
