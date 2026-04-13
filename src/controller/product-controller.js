@@ -51,9 +51,25 @@ const updateProductVariant = async (req, res, next) => {
     }
 }
 
+const removeProductVariant = async (req, res, next) => {
+    try {
+        const request = {
+            id: parseInt(req.params.productVariantId),
+            product_id: parseInt(req.params.productId)
+        }
+        const result = await productService.removeProductVariant(request)
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
     create,
     update,
     remove,
-    updateProductVariant
+    updateProductVariant,
+    removeProductVariant
 }

@@ -320,3 +320,45 @@ describe("PUT /api/admin/products/productId/product-variants/productVariantId", 
         expect(response.body.errors).toBeDefined()
     })
 })
+
+describe("DELETE /api/admin/products/productId/product-variants/productVariantId", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestAdmin()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+    })
+
+    it("Should success delete product variant", async () => {
+        const adminLogin = await testUtil.login()
+        const product = await testUtil.createTestProductVariant()
+
+        const response = await request(web).delete(`/api/admin/products/${product.product_id}/product-variants/${product.id}`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toBe("OK")
+    })
+
+    it("Should reject if id product variant is not found", async () => {
+        const adminLogin = await testUtil.login()
+        const product = await testUtil.createTestProductVariant()
+
+        const response = await request(web).delete(`/api/admin/products/${product.product_id}/product-variants/99999`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+})
