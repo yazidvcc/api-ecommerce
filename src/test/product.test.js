@@ -455,3 +455,39 @@ describe("DELETE /api/admin/products/productId/product-variants/productVariantId
         expect(response.body.errors).toBeDefined()
     })
 })
+
+describe("GET /api/products/productId/product-variants", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestCustomer()
+        await testUtil.createManyTestProduct()
+    })
+
+    afterEach(async () => {
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+        await prismaClient.user.deleteMany()
+    })
+
+    it("Should success get product variants", async () => {
+        const product = await testUtil.createManyTestProductVariant()
+        const response = await request(web).get(`/api/products/${product.id}/product-variants`)
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data.productVariants).toBeDefined()
+    })
+
+    it("Should reject if product id not found", async () => {
+        const response = await request(web).get(`/api/products/9999/product-variants`)
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+})

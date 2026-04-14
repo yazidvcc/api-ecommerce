@@ -286,6 +286,58 @@ const removeProductVariant = async (request) => {
     return "OK"
 }
 
+const searchProductVariant = async (productId) => {
+    
+    productId = validate(idProductValidation, productId)
+
+    const countProductVariant = await prismaClient.product.count({
+        where: {
+            id: productId
+        }
+    })
+
+    if (countProductVariant === 0) {
+        throw new ResponseError(404, "Product variant not found")
+    }
+
+    return await prismaClient.product.findUnique({
+        where: {
+            id: productId
+        },
+        select: {
+            id: true,
+            name: true,
+            gender: true,
+            description: true,
+            createdAt: true,
+            category: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
+            productVariants: {
+                select: {
+                    color: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
+                    size: {
+                        select: {
+                            id: true,
+                            label: true
+                        }
+                    },
+                    price: true,
+                    stock: true
+                }
+            }
+        }
+    })
+}
+
 export default {
     create,
     update,
@@ -293,5 +345,6 @@ export default {
     search,
     get,
     updateProductVariant,
-    removeProductVariant
+    removeProductVariant,
+    searchProductVariant
 }

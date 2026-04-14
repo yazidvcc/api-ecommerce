@@ -190,6 +190,26 @@ const createTestProductVariant = async () => {
     })
 }
 
+const createManyTestProductVariant = async () => {
+    
+    const category = await createTestCategory()
+    const productVariants = await dummyManyProductVariant()
+
+    return await prismaClient.product.create({
+        data: {
+            name: "Test",
+            description: "Test Description",
+            gender: "MALE",
+            category_id: category.id,
+            productVariants: {
+                createMany: {
+                    data: productVariants
+                }
+            }
+        }
+    })
+}
+
 const dummyManyProductVariant = async () => {
 
     await createManyTestColors()
@@ -226,6 +246,7 @@ export default {
     createTestProduct,
     createManyTestProduct,
     createTestProductVariant,
+    createManyTestProductVariant,
     dummyManyProductVariant,
     login
 }
