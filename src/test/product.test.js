@@ -251,6 +251,55 @@ describe("DELETE /api/admin/products/productId", () => {
     })
 })
 
+describe("GET /api/products", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestCustomer()
+        await testUtil.createManyTestProduct()
+    })
+
+    afterEach(async () => {
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+        await prismaClient.user.deleteMany()
+    })
+
+    it("Should success get products", async () => {
+        const response = await request(web).get("/api/products")
+                            .query({
+                                page: 1,
+                                size: 10,
+                                name: "2"
+                            })
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toBeDefined()
+        expect(response.body.paging.total_items).toBe(1)
+        expect(response.body.paging.total_page).toBe(1)
+    })
+
+    it("Should success get products by gender", async () => {
+        const response = await request(web).get("/api/products")
+                            .query({
+                                page: 1,
+                                size: 10,
+                                gender: "MALE"
+                            })
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toBeDefined()
+        expect(response.body.paging.total_items).toBe(5)
+        expect(response.body.paging.total_page).toBe(1)
+    })
+})
+
 describe("PUT /api/admin/products/productId/product-variants/productVariantId", () => {
 
     beforeEach(async () => {

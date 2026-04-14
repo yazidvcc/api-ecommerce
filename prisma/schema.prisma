@@ -42,10 +42,17 @@ model Category {
   @@map("categories")
 }
 
+enum ProductGender {
+  MALE
+  FEMALE
+  UNISEX
+}
+
 model Product {
   id          Int      @id @default(autoincrement())
   category_id Int
   name        String   @db.VarChar(255)
+  gender      ProductGender
   description String   @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

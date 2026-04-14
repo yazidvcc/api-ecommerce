@@ -1,11 +1,12 @@
 import { request } from "express"
 import prismaClient from "../application/database"
 import ResponseError from "../error/response-error"
-import { createProductValidation, idProductValidation, removeProductVariantValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation"
+import { createProductValidation, idProductValidation, removeProductVariantValidation, searchProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation"
 import validate from "../validation/validation"
+import redis from "../application/redis"
 
 const create = async (request) => {
-    
+
     request = validate(createProductValidation, request)
 
     const countProduct = await prismaClient.product.count({
@@ -100,8 +101,59 @@ const update = async (request) => {
     })
 }
 
+const search = async (request) => {
+
+    request = validate(searchProductValidation, request)
+
+    const skip = (request.page - 1) * request.size
+
+    const where = {}
+
+    if (request.category_id) {
+        where.category_id = {
+            equals: request.category_id
+        }
+    }
+
+    if (request.gender) {
+        where.gender = {
+            equals: request.gender
+        }
+    }
+
+    if (request.name) {
+        where.name = {
+            contains: request.name
+        }
+    }
+
+    const products = await prismaClient.product.findMany({
+        where: where,
+        skip: skip,
+        take: request.size,
+        orderBy: {
+            createdAt: "desc"
+        }
+    })
+
+    const count = await prismaClient.product.count({
+        where: where
+    })
+
+    return {
+        data: products,
+        paging: {
+            page: request.page,
+            total_page: Math.ceil(count / request.size),
+            total_items: count
+        }
+
+    }
+
+}
+
 const remove = async (productId) => {
-    
+
     productId = validate(idProductValidation, productId)
 
     await prismaClient.$transaction(async (tx) => {
@@ -126,10 +178,10 @@ const remove = async (productId) => {
 }
 
 const updateProductVariant = async (request) => {
-    
+
     request = validate(updateProductVariantValidation, request)
 
-    const result =  await prismaClient.$transaction(async (tx) => {
+    const result = await prismaClient.$transaction(async (tx) => {
         const countProductVariant = await tx.productVariant.count({
             where: {
                 AND: [
@@ -198,6 +250,7 @@ export default {
     create,
     update,
     remove,
+    search,
     updateProductVariant,
     removeProductVariant
 }
