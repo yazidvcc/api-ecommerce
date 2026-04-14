@@ -182,10 +182,20 @@ const createTestProductVariant = async () => {
         select: {
             id: true,
             product_id: true,
-            color_id: true,
-            size_id: true,
             price: true,
-            stock: true
+            stock: true,
+            size: {
+                select: {
+                    id: true,
+                    label: true
+                }
+            },
+            color: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
         }
     })
 }

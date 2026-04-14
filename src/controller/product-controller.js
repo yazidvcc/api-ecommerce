@@ -98,6 +98,19 @@ const searchProductVariant = async (req, res, next) => {
     }
 }
 
+const getProductVariant = async (req, res, next) => {
+    try {
+        const productVariantId = parseInt(req.params.productVariantId)
+        const productId = parseInt(req.params.productId)
+        const result = await productService.getProductVariant(productVariantId, productId)
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
     create,
     update,
@@ -106,5 +119,6 @@ export default {
     remove,
     updateProductVariant,
     removeProductVariant,
-    searchProductVariant
+    searchProductVariant,
+    getProductVariant
 }
