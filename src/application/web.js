@@ -9,6 +9,9 @@ const web = express();
 web.use(express.json());
 web.use(expressFileUpload())
 web.use(cookieParser());
+web.use(cors({
+    origin: "http://localhost:5173"
+}))
 web.use(publicRouter);
 web.use(protectedRouter);
 web.use(errorMiddleware)
