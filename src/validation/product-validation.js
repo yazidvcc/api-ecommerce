@@ -31,6 +31,8 @@ const searchProductValidation = Joi.object({
 
 const idProductValidation = Joi.number().positive().required()
 
+const idProductVariantValidation = Joi.number().positive().required()
+
 const updateProductVariantValidation = Joi.object({
     id: Joi.number().positive().required(),
     product_id: Joi.number().positive().required(),
@@ -48,6 +50,7 @@ export {
     updateProductValidation,
     searchProductValidation,
     idProductValidation,
+    idProductVariantValidation,
     updateProductVariantValidation,
     removeProductVariantValidation
 }

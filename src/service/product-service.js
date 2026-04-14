@@ -1,7 +1,7 @@
 import { request } from "express"
 import prismaClient from "../application/database"
 import ResponseError from "../error/response-error"
-import { createProductValidation, idProductValidation, removeProductVariantValidation, searchProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation"
+import { createProductValidation, idProductValidation, idProductVariantValidation, removeProductVariantValidation, searchProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation"
 import validate from "../validation/validation"
 import redis from "../application/redis"
 
@@ -338,6 +338,43 @@ const searchProductVariant = async (productId) => {
     })
 }
 
+const getProductVariant = async ( productVariantId, productId) => {
+    
+    productVariantId = validate(idProductVariantValidation, productVariantId)
+    productId = validate(idProductValidation, productId)
+
+    const productVariant = await prismaClient.productVariant.findFirst({
+        where: {
+            id: productVariantId,
+            product_id: productId
+        },
+        select: {
+            id: true,
+            price: true,
+            stock: true,
+            size: {
+                select: {
+                    id: true,
+                    label: true
+                }
+            },
+            color: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            }
+        }
+    })
+
+    if (!productVariant) {
+        throw new ResponseError(404, "Product variant not found")
+    }
+
+    return productVariant
+
+}
+
 export default {
     create,
     update,
@@ -346,5 +383,6 @@ export default {
     get,
     updateProductVariant,
     removeProductVariant,
-    searchProductVariant
+    searchProductVariant,
+    getProductVariant
 }

@@ -491,3 +491,45 @@ describe("GET /api/products/productId/product-variants", () => {
         expect(response.body.errors).toBeDefined()
     })
 })
+
+describe("GET /api/admin/products/productId/product-variants/productVariantId", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestCustomer()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+    })
+
+    it("Should success get product variant by id", async () => {
+        const product = await testUtil.createTestProductVariant()
+
+        const response = await request(web).get(`/api/products/${product.product_id}/product-variants/${product.id}`)
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data.id).toBe(product.id)
+        expect(response.body.data.price).toBe(product.price)
+        expect(response.body.data.stock).toBe(product.stock)
+        expect(response.body.data.size.label).toBe(product.size.label)
+        expect(response.body.data.color.name).toBe(product.color.name)
+    })
+
+    it("Should reject if product variant id is not found", async () => {
+        const product = await testUtil.createTestProductVariant()
+
+        const response = await request(web).get(`/api/products/${product.product_id}/product-variants/99999`)
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+})
