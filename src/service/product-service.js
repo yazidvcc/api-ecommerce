@@ -93,6 +93,7 @@ const update = async (request) => {
             id: true,
             name: true,
             description: true,
+            gender: true,
             category_id: true,
             createdAt: true,
             updatedAt: true,

@@ -29,6 +29,7 @@ describe("POST /api/admin/products", () => {
             .send({
                 name: "product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: category.id,
                 product_variants: productVariants
             })
@@ -107,6 +108,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: product.category_id
             })
 
@@ -115,6 +117,7 @@ describe("PUT /api/admin/products/productId", () => {
         expect(response.status).toBe(200)
         expect(response.body.data.name).toBe("product 1")
         expect(response.body.data.description).toBe("description 1")
+        expect(response.body.data.gender).toBe("MALE")
         expect(response.body.data.category_id).toBe(product.category_id)
     })
 
@@ -128,6 +131,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: 999
             })
 
@@ -147,6 +151,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: product.category_id
             })
 
@@ -166,6 +171,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "Test",
                 description: "description 1",
+                gender: "MALE",
                 category_id: product.category_id
             })
 
@@ -190,6 +196,7 @@ describe("PUT /api/admin/products/productId", () => {
                 name: "product 1",
                 description: "description 1",
                 category_id: category.id,
+                gender: "MALE",
                 product_variants: productVariants
             })
 
@@ -199,6 +206,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "Product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: product.category_id
             })
 
