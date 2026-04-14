@@ -131,6 +131,7 @@ const createTestProduct = async () => {
         data: {
             name: "Test",
             description: "Test",
+            gender: "MALE",
             category_id: category.id
         },
         select: {

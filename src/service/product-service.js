@@ -152,6 +152,45 @@ const search = async (request) => {
 
 }
 
+const get = async (productId) => {
+
+    productId = validate(idProductValidation, productId)
+
+    const product = await prismaClient.$transaction(async (tx) => {
+        const countProduct = await tx.product.count({
+            where: {
+                id: productId
+            }
+        })
+
+        if (countProduct === 0) {
+            throw new ResponseError(404, "Product not found")
+        }
+
+        return await tx.product.findUnique({
+            where: {
+                id: productId
+            },
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                gender: true,
+                category: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
+                createdAt: true,
+                updatedAt: true
+            }
+        })
+    })
+
+    return product
+}
+
 const remove = async (productId) => {
 
     productId = validate(idProductValidation, productId)
@@ -251,6 +290,7 @@ export default {
     update,
     remove,
     search,
+    get,
     updateProductVariant,
     removeProductVariant
 }
