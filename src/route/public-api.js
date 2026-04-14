@@ -22,4 +22,6 @@ publicRouter.get("/api/sizes", sizeController.search);
 publicRouter.get("/api/sizes/:sizeId", sizeController.get);
 
 publicRouter.get("/api/products", productController.search);
+publicRouter.get("/api/products/:productId", productController.get);
+
 export default publicRouter
