@@ -87,6 +87,17 @@ const removeProductVariant = async (req, res, next) => {
     }
 }
 
+const searchProductVariant = async (req, res, next) => {
+    try {
+        const result = await productService.searchProductVariant(req.params.productId)
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
     create,
     update,
@@ -94,5 +105,6 @@ export default {
     get,
     remove,
     updateProductVariant,
-    removeProductVariant
+    removeProductVariant,
+    searchProductVariant
 }

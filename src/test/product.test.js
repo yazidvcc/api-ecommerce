@@ -29,6 +29,7 @@ describe("POST /api/admin/products", () => {
             .send({
                 name: "product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: category.id,
                 product_variants: productVariants
             })
@@ -107,6 +108,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: product.category_id
             })
 
@@ -115,6 +117,7 @@ describe("PUT /api/admin/products/productId", () => {
         expect(response.status).toBe(200)
         expect(response.body.data.name).toBe("product 1")
         expect(response.body.data.description).toBe("description 1")
+        expect(response.body.data.gender).toBe("MALE")
         expect(response.body.data.category_id).toBe(product.category_id)
     })
 
@@ -128,6 +131,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: 999
             })
 
@@ -147,6 +151,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: product.category_id
             })
 
@@ -166,6 +171,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "Test",
                 description: "description 1",
+                gender: "MALE",
                 category_id: product.category_id
             })
 
@@ -190,6 +196,7 @@ describe("PUT /api/admin/products/productId", () => {
                 name: "product 1",
                 description: "description 1",
                 category_id: category.id,
+                gender: "MALE",
                 product_variants: productVariants
             })
 
@@ -199,6 +206,7 @@ describe("PUT /api/admin/products/productId", () => {
             .send({
                 name: "Product 1",
                 description: "description 1",
+                gender: "MALE",
                 category_id: product.category_id
             })
 
@@ -440,6 +448,42 @@ describe("DELETE /api/admin/products/productId/product-variants/productVariantId
 
         const response = await request(web).delete(`/api/admin/products/${product.product_id}/product-variants/99999`)
             .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+})
+
+describe("GET /api/products/productId/product-variants", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestCustomer()
+        await testUtil.createManyTestProduct()
+    })
+
+    afterEach(async () => {
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+        await prismaClient.user.deleteMany()
+    })
+
+    it("Should success get product variants", async () => {
+        const product = await testUtil.createManyTestProductVariant()
+        const response = await request(web).get(`/api/products/${product.id}/product-variants`)
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data.productVariants).toBeDefined()
+    })
+
+    it("Should reject if product id not found", async () => {
+        const response = await request(web).get(`/api/products/9999/product-variants`)
 
         depth(response.body)
 
