@@ -24,6 +24,15 @@ const update = async (req, res, next) => {
     }
 }
 
+const search = async (req, res, next) => {
+    try {
+        const result = await productService.search(req.query)
+        res.status(200).json(result)
+    } catch (e) {
+        next(e)
+    }
+}
+
 const remove = async (req, res, next) => {
     try {
         const productId = parseInt(req.params.productId)
@@ -69,6 +78,7 @@ const removeProductVariant = async (req, res, next) => {
 export default {
     create,
     update,
+    search,
     remove,
     updateProductVariant,
     removeProductVariant

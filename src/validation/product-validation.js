@@ -24,8 +24,9 @@ const updateProductValidation = Joi.object({
 const searchProductValidation = Joi.object({
     category_id: Joi.number().positive().optional(),
     name: Joi.string().optional(),
-    page: Joi.number().min(1).optional(),
-    size: Joi.number().min(1).max(100).optional()
+    gender: Joi.string().valid("MALE", "FEMALE", "UNISEX").optional(),
+    page: Joi.number().min(1).default(1).optional(),
+    size: Joi.number().min(1).default(20).optional()
 })
 
 const idProductValidation = Joi.number().positive().required()
@@ -45,6 +46,7 @@ const removeProductVariantValidation = Joi.object({
 export {
     createProductValidation,
     updateProductValidation,
+    searchProductValidation,
     idProductValidation,
     updateProductVariantValidation,
     removeProductVariantValidation

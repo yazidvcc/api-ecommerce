@@ -3,6 +3,7 @@ import userController from "../controller/user-controller.js"
 import categoryController from "../controller/category-controller.js";
 import colorController from "../controller/color-controller.js";
 import sizeController from "../controller/size-controller.js";
+import productController from "../controller/product-controller.js";
 
 const publicRouter = express.Router()
 
@@ -19,4 +20,6 @@ publicRouter.get("/api/colors/:colorId", colorController.get);
 
 publicRouter.get("/api/sizes", sizeController.search);
 publicRouter.get("/api/sizes/:sizeId", sizeController.get);
+
+publicRouter.get("/api/products", productController.search);
 export default publicRouter
