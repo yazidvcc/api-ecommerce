@@ -6,6 +6,7 @@ import colorController from "../controller/color-controller.js"
 import sizeController from "../controller/size-controller.js"
 import roleMiddleware from "../middleware/role-middleware.js"
 import productController from "../controller/product-controller.js"
+import cartController from "../controller/cart-controller.js"
 
 const protectedRouter = express.Router()
 
@@ -33,5 +34,7 @@ protectedRouter.put("/api/admin/products/:productId", productController.update)
 protectedRouter.delete("/api/admin/products/:productId", productController.remove)
 protectedRouter.put("/api/admin/products/:productId/product-variants/:productVariantId", productController.updateProductVariant)
 protectedRouter.delete("/api/admin/products/:productId/product-variants/:productVariantId", productController.removeProductVariant)
+
+protectedRouter.post("/api/carts", cartController.create)
 
 export default protectedRouter
