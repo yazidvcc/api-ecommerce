@@ -244,6 +244,18 @@ const dummyManyProductVariant = async () => {
 
 }
 
+const createTestCart = async (userId) => {
+    const productVariant = await createTestProductVariant()
+
+    return await prismaClient.cart.create({
+        data: {
+            user_id: userId,
+            product_variant_id: productVariant.id,
+            quantity: 1
+        }
+    })
+}
+
 export default {
     createTestCustomer,
     createTestAdmin,
@@ -257,6 +269,7 @@ export default {
     createManyTestProduct,
     createTestProductVariant,
     createManyTestProductVariant,
+    createTestCart,
     dummyManyProductVariant,
     login
 }
