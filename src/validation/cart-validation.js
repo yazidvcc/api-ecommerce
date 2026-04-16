@@ -5,6 +5,9 @@ const createCartValidation = Joi.object({
     quantity: Joi.number().positive().default(1).optional()
 })
 
+const idCartValidation = Joi.number().positive().required()
+
 export {
-    createCartValidation
+    createCartValidation,
+    idCartValidation
 }

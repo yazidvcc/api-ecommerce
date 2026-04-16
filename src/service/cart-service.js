@@ -1,5 +1,5 @@
 import validate from "../validation/validation"
-import { createCartValidation } from "../validation/cart-validation"
+import { createCartValidation, idCartValidation } from "../validation/cart-validation"
 import prismaClient from "../application/database"
 import ResponseError from "../error/response-error"
 
@@ -39,6 +39,28 @@ const create = async (userId, request) => {
     })
 }
 
+const remove = async (cartId) => {
+    
+    cartId = validate(idCartValidation, cartId)
+
+    const count = await prismaClient.cart.count({
+        where: {
+            id: cartId
+        }
+    })
+
+    if (count === 0) {
+        throw new ResponseError(404, "Cart is not found")
+    }
+
+    return await prismaClient.cart.delete({
+        where: {
+            id: cartId
+        }
+    })
+}
+
 export default {
-    create
+    create,
+    remove
 }

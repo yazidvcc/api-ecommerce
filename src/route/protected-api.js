@@ -36,5 +36,6 @@ protectedRouter.put("/api/admin/products/:productId/product-variants/:productVar
 protectedRouter.delete("/api/admin/products/:productId/product-variants/:productVariantId", productController.removeProductVariant)
 
 protectedRouter.post("/api/carts", cartController.create)
+protectedRouter.delete("/api/carts/:cartId", cartController.remove)
 
 export default protectedRouter
