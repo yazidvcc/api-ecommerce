@@ -74,3 +74,45 @@ describe("POST /api/carts", () => {
     })
 
 })
+
+describe("DELETE /api/carts/cartId", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestCustomer()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+    })
+
+    it("should success remove products from cart", async () => {
+        const adminLogin = await testUtil.login()
+        const cart = await testUtil.createTestCart(adminLogin.body.data.id)
+
+        const response = await request(web).delete(`/api/carts/${cart.id}`)
+                .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toBe("OK")
+    })
+
+    it("should reject if cart id not found", async () => {
+        const adminLogin = await testUtil.login()
+
+        const response = await request(web).delete(`/api/carts/999`)
+                .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+
+})

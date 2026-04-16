@@ -11,6 +11,18 @@ const create = async (req, res, next) => {
     }
 }
 
+const remove = async (req, res, next) => {
+    try {
+        const result = await cartService.remove(req.params.cartId)
+        res.status(200).json({
+            data: "OK"
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
-    create
+    create,
+    remove
 }
