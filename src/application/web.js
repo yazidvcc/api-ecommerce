@@ -4,6 +4,7 @@ import publicRouter from '../route/public-api.js';
 import errorMiddleware from '../middleware/error-middleware.js';
 import expressFileUpload from 'express-fileupload'
 import protectedRouter from '../route/protected-api.js';
+import cors from 'cors'
 
 const web = express();
 web.use(express.json());

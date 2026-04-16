@@ -19,7 +19,7 @@ describe("POST /api/admin/products", () => {
     })
 
     it("Should success create product", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.login()   
         const category = await testUtil.createTestCategory()
         const productVariants = await testUtil.dummyManyProductVariant()
 
