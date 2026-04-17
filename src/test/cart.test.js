@@ -116,3 +116,34 @@ describe("DELETE /api/carts/cartId", () => {
     })
 
 })
+
+describe("GET /api/carts", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestCustomer()
+    })
+
+    afterEach(async () => {
+        await prismaClient.cart.deleteMany()
+        await prismaClient.user.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+    })
+
+    it("should success get carts", async () => {
+        const adminLogin = await testUtil.login()
+        await testUtil.createManyTestCarts(adminLogin.body.data.id)
+
+        const response = await request(web).get("/api/carts")
+                            .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toBeDefined()
+    })
+
+})
