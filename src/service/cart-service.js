@@ -60,7 +60,53 @@ const remove = async (cartId) => {
     })
 }
 
+const get = async (userId) => {
+    return await prismaClient.cart.findMany({
+        where: {
+            user_id: userId
+        },
+        select: {
+            id: true,
+            quantity: true,
+            productVariant: {
+                select: {
+                    id: true,
+                    price: true,
+                    product: {
+                        select: {
+                            id: true,
+                            name: true,
+                            productPhotos: {
+                                where: {
+                                 is_main: true   
+                                },
+                                take: 1,
+                                select: {
+                                    url: true
+                                }
+                            }
+                        }
+                    },
+                    color: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
+                    size: {
+                        select: {
+                            id: true,
+                            label: true
+                        }
+                    }
+                }
+            }
+        }
+    })
+}
+
 export default {
     create,
-    remove
+    remove,
+    get
 }

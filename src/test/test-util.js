@@ -216,6 +216,9 @@ const createManyTestProductVariant = async () => {
                     data: productVariants
                 }
             }
+        },
+        include: {
+            productVariants: true
         }
     })
 }
@@ -256,6 +259,23 @@ const createTestCart = async (userId) => {
     })
 }
 
+const createManyTestCarts = async (userId) => {
+    const productVariants = await createManyTestProductVariant()
+    const carts = []
+    for (const productVariant of productVariants.productVariants) {
+        carts.push({
+            user_id: userId,
+            product_variant_id: productVariant.id,
+            quantity: 1
+        })
+    }
+
+    return await prismaClient.cart.createMany({
+        data: carts
+    })
+
+}
+
 export default {
     createTestCustomer,
     createTestAdmin,
@@ -270,6 +290,7 @@ export default {
     createTestProductVariant,
     createManyTestProductVariant,
     createTestCart,
+    createManyTestCarts,
     dummyManyProductVariant,
     login
 }
