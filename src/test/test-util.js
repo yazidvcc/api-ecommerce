@@ -9,11 +9,9 @@ const createTestCustomer = async () => {
 
     return prismaClient.user.create({
         data: {
-            username: "test",
             password: password,
             email: "yazid@gmail.com",
             name: "test",
-            address: "Jalan Test",
             role: "CUSTOMER"
         }
     })
@@ -25,11 +23,9 @@ const createTestAdmin = async () => {
 
     return prismaClient.user.create({
         data: {
-            username: "test",
             password: password,
             email: "yazid@gmail.com",
             name: "test",
-            address: "Jalan Test",
             role: "ADMIN"
         }
     })

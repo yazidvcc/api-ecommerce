@@ -17,12 +17,10 @@ enum Role {
 
 model User {
   id        Int      @id @default(autoincrement())
-  username  String?  @unique @db.VarChar(100)
-  password  String?  @db.VarChar(255)
   name      String   @db.VarChar(100)
   email     String   @unique @db.VarChar(50)
+  password  String?  @db.VarChar(255)
   phone     String?  @db.VarChar(15)
-  address   String?  @db.VarChar(255)
   token     String?  @db.VarChar(255)
   role      Role     @default(CUSTOMER)
   createdAt DateTime @default(now())
@@ -49,13 +47,13 @@ enum ProductGender {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   category_id Int
-  name        String   @db.VarChar(255)
+  name        String        @db.VarChar(255)
   gender      ProductGender
-  description String   @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  description String        @db.Text
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   category        Category         @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: Cascade)
   productVariants ProductVariant[]
@@ -84,12 +82,12 @@ model Size {
 }
 
 model ProductVariant {
-  id         Int    @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   product_id Int
   color_id   Int
   size_id    Int
   price      Int
-  stock      Int    @db.SmallInt
+  stock      Int      @db.SmallInt
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -97,8 +95,8 @@ model ProductVariant {
   color   Color   @relation(fields: [color_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   size    Size    @relation(fields: [size_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  carts   Cart[]
-  reviews Review[]
+  carts      Cart[]
+  reviews    Review[]
 
   @@map("product_variants")
 }
@@ -106,7 +104,7 @@ model ProductVariant {
 model ProductPhoto {
   id         Int     @id @default(autoincrement())
   product_id Int
-  color_id   Int?    
+  color_id   Int?
   url        String  @db.VarChar(300)
   is_main    Boolean @default(false)
 
@@ -141,33 +139,39 @@ model Review {
   @@map("reviews")
 }
 
-// enum OrderStatus {
-//   PENDING
-//   SHIPPED
-//   DELIVERED
-//   CANCELLED
-// }
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
 
 // model Order {
-//   id                 Int         @id @default(autoincrement())
-//   user_id            Int
-//   product_variant_id Int
-//   quantity           Int         @db.SmallInt
-//   total_price        Int
-//   status             OrderStatus @default(PENDING)
-//   createdAt          DateTime    @default(now())
-//   updatedAt          DateTime    @updatedAt
+//   id                Int           @id @default(autoincrement())
+//   user_id           Int
+//   address           String        @db.Text
+//   total_price       Int
+//   status            OrderStatus   @default(PENDING)
+//   createdAt         DateTime      @default(now())
+//   updatedAt         DateTime      @updatedAt
 
-//   user           User           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-//   productVariant ProductVariant @relation(fields: [product_variant_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   user       User        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   orderItems OrderItem[]
 
 //   @@map("orders")
 // }
 
-// model Payment {
-//   id Int @id @default(autoincrement())
-//   order_id Int
-//   payment_url String @db.VarChar(255)
-//   status OrderStatus @default(PENDING)
+// model OrderItem {
+//   id                 Int      @id @default(autoincrement())
+//   order_id           Int
+//   product_variant_id Int
+//   quantity           Int      @db.SmallInt
+//   createdAt          DateTime @default(now())
+//   updatedAt          DateTime @updatedAt
 
+//   order   Order          @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   product ProductVariant @relation(fields: [product_variant_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+//   @@unique([order_id, product_variant_id])
+//   @@map("order_items")
 // }
