@@ -173,7 +173,8 @@ const createTestProductVariant = async () => {
             color_id: color.id,
             size_id: size.id,
             price: 100000,
-            stock: 10
+            stock: 10,
+            weight: 1
         },
         select: {
             id: true,
@@ -234,7 +235,8 @@ const dummyManyProductVariant = async () => {
                 color_id: color.id,
                 size_id: size.id,
                 price: 100000,
-                stock: 10
+                stock: 10,
+                weight: 1
             })
         }
     }
