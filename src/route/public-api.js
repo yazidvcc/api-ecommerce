@@ -4,6 +4,7 @@ import categoryController from "../controller/category-controller.js";
 import colorController from "../controller/color-controller.js";
 import sizeController from "../controller/size-controller.js";
 import productController from "../controller/product-controller.js";
+import orderController from "../controller/order-controller.js";
 
 const publicRouter = express.Router()
 
@@ -25,5 +26,8 @@ publicRouter.get("/api/products", productController.search);
 publicRouter.get("/api/products/:productId", productController.get);
 publicRouter.get("/api/products/:productId/product-variants", productController.searchProductVariant)
 publicRouter.get("/api/products/:productId/product-variants/:productVariantId", productController.getProductVariant)
+
+publicRouter.get("/api/orders/destination-address", orderController.getDestinationAddress)
+publicRouter.post("/api/orders/shipping-cost", orderController.getShippingCost)
 
 export default publicRouter
