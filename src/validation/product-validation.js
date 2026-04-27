@@ -9,7 +9,8 @@ const createProductValidation = Joi.object({
         color_id: Joi.number().positive().required(),
         size_id: Joi.number().positive().required(),
         price: Joi.number().positive().required(),
-        stock: Joi.number().positive().required()
+        stock: Joi.number().positive().required(),
+        weight: Joi.number().positive().required()
     })).required()
 })
 

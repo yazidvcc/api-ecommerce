@@ -40,47 +40,39 @@ describe("POST /api/users", () => {
         const response = await request(web).post("/api/users")
                                 .set("Accept", "application/json")
                                 .send({
-                                    username: "test",
                                     password: "password",
                                     email: "yazidrizal@gmail.com",
                                     confirm_password: "password",
                                     first_name: "test",
-                                    last_name: "test",
-                                    address: "Jalan jalan"
+                                    last_name: "test"
                                 })
 
         depth(response.body)
     
         expect(response.status).toBe(201)
-        expect(response.body.data.username).toBe("test")
         expect(response.body.data.name).toBe("test test")
         expect(response.body.data.email).toBe("yazidrizal@gmail.com")
-        expect(response.body.data.address).toBe("Jalan jalan")
     })  
 
     it("should reject if username is already exist", async () => {
         const response = await request(web).post("/api/users")
                                 .set("Accept", "application/json")
                                 .send({
-                                    username: "test",
                                     password: "password",
                                     email: "yazidrizal@gmail.com",
                                     confirm_password: "password",
                                     first_name: "test",
-                                    last_name: "test",
-                                    address: "Jalan jalan"
+                                    last_name: "test"
                                 })
 
         const response2 = await request(web).post("/api/users")
                                 .set("Accept", "application/json")
                                 .send({
-                                    username: "test",
                                     password: "password",
                                     email: "yazidrizal@gmail.com",
                                     confirm_password: "password",
                                     first_name: "test",
-                                    last_name: "test",
-                                    address: "Jalan jalan"
+                                    last_name: "test"
                                 })
 
         depth(response2.body)
@@ -93,25 +85,21 @@ describe("POST /api/users", () => {
         const response = await request(web).post("/api/users")
                                 .set("Accept", "application/json")
                                 .send({
-                                    username: "test",
                                     password: "password",
                                     email: "yazidrizal@gmail.com",
                                     confirm_password: "password",
                                     first_name: "test",
-                                    last_name: "test",
-                                    address: "Jalan jalan"
+                                    last_name: "test"
                                 })
 
         const response2 = await request(web).post("/api/users")
                                 .set("Accept", "application/json")
                                 .send({
-                                    username: "test1",
                                     password: "password1",
                                     email: "yazidrizal@gmail.com",
                                     confirm_password: "password1",
                                     first_name: "test1",
-                                    last_name: "test1",
-                                    address: "Jalan jalan1"
+                                    last_name: "test1"
                                 })
 
         depth(response2.body)
@@ -124,13 +112,11 @@ describe("POST /api/users", () => {
         const response = await request(web).post("/api/users")
                                 .set("Accept", "application/json")
                                 .send({
-                                    username: "test",
                                     password: "password",
                                     email: "yazidrizal@gmail.com",
                                     confirm_password: "blank",
                                     first_name: "test",
-                                    last_name: "test",
-                                    address: "Jalan jalan"
+                                    last_name: "test"
                                 })
 
         depth(response.body)

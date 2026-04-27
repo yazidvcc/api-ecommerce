@@ -29,33 +29,28 @@ const create = async (request) => {
 
     const count = await prismaClient.user.count({
         where: {
-            OR: [
-                { username: request.username },
-                { email: request.email }
-            ]
+            email: request.email
         }
     })
 
     if (count > 0) {
-        throw new ResponseError(400, "username or password is already exist")
+        throw new ResponseError(400, "email is already exist")
     }
     
     request.password = await bcrypt.hash(request.password, 10)
     request.name = request.first_name + " " + request.last_name
     request.role = "CUSTOMER"
 
-    request.first_name = undefined
-    request.last_name = undefined
-    request.confirm_password = undefined
+    delete request.first_name
+    delete request.last_name
+    delete request.confirm_password
 
     return await prismaClient.user.create({
         data: request,
         select: {
             id: true,
-            username: true,
-            name: true,
             email: true,
-            address: true,
+            name: true,
         }
     })
 }
@@ -200,7 +195,6 @@ const get = async (userId) => {
             id: true,
             name: true,
             email: true,
-            address: true,
             phone: true
         }
     })
