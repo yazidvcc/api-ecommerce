@@ -16,10 +16,10 @@ describe("POST /api/categories", () => {
     })
 
     it("should success create category", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).post("/api/admin/categories")
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     name: "Baju"
                 })
@@ -31,10 +31,10 @@ describe("POST /api/categories", () => {
     })
 
     it("should reject if name is empty", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).post("/api/admin/categories")
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     name: ""
                 })
@@ -48,10 +48,10 @@ describe("POST /api/categories", () => {
     it("should reject user is not admin", async () => {
         await prismaClient.user.deleteMany({})
         await testUtil.createTestCustomer()
-        const userLogin = await testUtil.login()
+        const customerLogin = await testUtil.loginCustomer()
 
         const response = await request(web).post("/api/admin/categories")
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", customerLogin.get("Set-Cookie"))
                 .send({
                     name: ""
                 })
@@ -76,12 +76,12 @@ describe("PUT /api/admin/categories/categoryId", () => {
     })
 
     it("should success update categories", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const category = await testUtil.createTestCategory()
 
         const response = await request(web).put(`/api/admin/categories/${category.id}`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     name: "Celana"
                 })
@@ -93,12 +93,12 @@ describe("PUT /api/admin/categories/categoryId", () => {
     })
 
     it("should reject if category is not found", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const category = await testUtil.createTestCategory()
 
         const response = await request(web).put(`/api/admin/categories/haha`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     name: "Celana"
                 })
@@ -110,12 +110,12 @@ describe("PUT /api/admin/categories/categoryId", () => {
     })
 
     it("should reject if name category is number", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const category = await testUtil.createTestCategory()
 
         const response = await request(web).put(`/api/admin/categories/${category.id}`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     name: 111
                 })
@@ -138,12 +138,12 @@ describe("DELETE /api/admin/categories/categoryId", () => {
     })
 
     it("should success delete categories", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const category = await testUtil.createTestCategory()
 
         const response = await request(web).delete(`/api/admin/categories/${category.id}`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -152,10 +152,10 @@ describe("DELETE /api/admin/categories/categoryId", () => {
     })
 
     it("should reject if category is not found", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).delete(`/api/admin/categories/haha`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -175,12 +175,12 @@ describe("GET /api/admin/categories/categoryId", () => {
     })
 
     it("should success get categoriy by id", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const category = await testUtil.createTestCategory()
 
         const response = await request(web).get(`/api/categories/${category.id}`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -189,10 +189,10 @@ describe("GET /api/admin/categories/categoryId", () => {
     })
 
     it("should reject if category is not found", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).get(`/api/categories/999`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -213,12 +213,12 @@ describe("GET /api/categories", () => {
     })
 
     it("should success search categories", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const categories = await testUtil.createManyTestCategory()
 
         const response = await request(web).get("/api/categories")
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 

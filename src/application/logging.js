@@ -10,5 +10,5 @@ export const logger = winston.createLogger({
 })
 
 export function depth(params) {
-    console.log(util.inspect(params, { depth: 5 }))
+    console.log(util.inspect(params, { depth: 10 }))
 }

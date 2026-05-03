@@ -20,11 +20,11 @@ describe("POST /api/carts", () => {
     })
 
     it("should success add products to cart", async () => {
-        const adminLogin = await testUtil.login()
+        const customerLogin = await testUtil.loginCustomer()
         const productVariant = await testUtil.createTestProductVariant()
 
         const response = await request(web).post("/api/carts")
-                .set("Cookie", adminLogin.get("Set-Cookie"))
+                .set("Cookie", customerLogin.get("Set-Cookie"))
                 .set("Content-Type", "application/json")
                 .send({
                     product_variant_id: productVariant.id,
@@ -39,10 +39,10 @@ describe("POST /api/carts", () => {
     })
 
     it("should reject if product variant id not found", async () => {
-        const adminLogin = await testUtil.login()
+        const customerLogin = await testUtil.loginCustomer()
 
         const response = await request(web).post("/api/carts")
-                .set("Cookie", adminLogin.get("Set-Cookie"))
+                .set("Cookie", customerLogin.get("Set-Cookie"))
                 .set("Content-Type", "application/json")
                 .send({
                     product_variant_id: 999,
@@ -56,11 +56,11 @@ describe("POST /api/carts", () => {
     })
 
     it("should reject if product variant already in cart", async () => {
-        const adminLogin = await testUtil.login()
-        const cart = await testUtil.createTestCart(adminLogin.body.data.id)
+        const customerLogin = await testUtil.loginCustomer()
+        const cart = await testUtil.createTestCart(customerLogin.body.data.id)
 
         const response = await request(web).post("/api/carts")
-                .set("Cookie", adminLogin.get("Set-Cookie"))
+                .set("Cookie", customerLogin.get("Set-Cookie"))
                 .set("Content-Type", "application/json")
                 .send({
                     product_variant_id: cart.product_variant_id,
@@ -91,11 +91,11 @@ describe("DELETE /api/carts/cartId", () => {
     })
 
     it("should success remove products from cart", async () => {
-        const adminLogin = await testUtil.login()
-        const cart = await testUtil.createTestCart(adminLogin.body.data.id)
+        const customerLogin = await testUtil.loginCustomer()
+        const cart = await testUtil.createTestCart(customerLogin.body.data.id)
 
         const response = await request(web).delete(`/api/carts/${cart.id}`)
-                .set("Cookie", adminLogin.get("Set-Cookie"))
+                .set("Cookie", customerLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -104,10 +104,10 @@ describe("DELETE /api/carts/cartId", () => {
     })
 
     it("should reject if cart id not found", async () => {
-        const adminLogin = await testUtil.login()
+        const customerLogin = await testUtil.loginCustomer()
 
         const response = await request(web).delete(`/api/carts/999`)
-                .set("Cookie", adminLogin.get("Set-Cookie"))
+                .set("Cookie", customerLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -134,11 +134,11 @@ describe("GET /api/carts", () => {
     })
 
     it("should success get carts", async () => {
-        const adminLogin = await testUtil.login()
-        await testUtil.createManyTestCarts(adminLogin.body.data.id)
+        const customerLogin = await testUtil.loginCustomer()
+        await testUtil.createManyTestCarts(customerLogin.body.data.id)
 
         const response = await request(web).get("/api/carts")
-                            .set("Cookie", adminLogin.get("Set-Cookie"))
+                            .set("Cookie", customerLogin.get("Set-Cookie"))
 
         depth(response.body)
 
