@@ -478,11 +478,36 @@ const get = async (user, orderId) => {
     return order
 }
 
+const remove = async (orderId) => {
+    
+    orderId = validate(idOrderValidation, orderId)
+
+    const order = await prismaClient.order.findFirst({
+        where: {
+            id: orderId,
+            payment_status: "FAILED"
+        }
+    })
+
+    if (!order) {
+        throw new ResponseError(404, "can't remove this order")
+    }
+
+    await prismaClient.order.delete({
+        where: {
+            id: orderId
+        }
+    })
+
+    return "Success remove this order"
+}
+
 export default {
     getDestinationAddress,
     getShippingCost,
     getTokenTransaction,
     getNotification,
     search,
-    get
+    get,
+    remove
 }

@@ -416,3 +416,88 @@ describe("GET /api/orders/orderId", () => {
 
 
 })
+
+describe("DELETE /api/admin/orders/:orderId", () => {
+
+    beforeEach(async () => {
+        await prismaClient.orderItem.deleteMany()
+        await prismaClient.order.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.user.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.category.deleteMany()
+        await testUtil.createTestCustomer()
+        await testUtil.createTestAdmin()
+    })
+
+    it("should success delete order", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+        await createTestOrder(2)
+        const order = await prismaClient.order.findFirst()
+
+        await prismaClient.order.update({
+            where: { id: order.id },
+            data: { payment_status: "FAILED" }
+        })
+
+        const response = await request(web).delete(`/api/admin/orders/${order.id}`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data).toBe("Success remove this order")
+
+        const orderCheck = await prismaClient.order.findUnique({
+            where: { id: order.id }
+        })
+        expect(orderCheck).toBeNull()
+    })
+
+    it("should reject if payment status is not FAILED", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+        await createTestOrder(2)
+        const order = await prismaClient.order.findFirst()
+
+        const response = await request(web).delete(`/api/admin/orders/${order.id}`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+
+    it("should reject if order id is not found", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+
+        const response = await request(web).delete(`/api/admin/orders/invalid`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+
+    it("should reject if user is not admin", async () => {
+        const customerLogin = await testUtil.loginCustomer()
+        await createTestOrder(2)
+        const order = await prismaClient.order.findFirst()
+
+        await prismaClient.order.update({
+            where: { id: order.id },
+            data: { payment_status: "FAILED" }
+        })
+
+        const response = await request(web).delete(`/api/admin/orders/${order.id}`)
+            .set("Cookie", customerLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(403)
+    })
+
+})

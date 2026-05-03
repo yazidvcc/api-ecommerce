@@ -62,11 +62,23 @@ const get = async (req, res, next) => {
     }
 }
 
+const remove = async (req, res, next) => {
+    try {
+        const result = await orderService.remove(req.params.orderId)
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
     getDestinationAddress,
     getShippingCost,
     getTokenTransaction,
     getNotification,
     search,
-    get
+    get,
+    remove
 }

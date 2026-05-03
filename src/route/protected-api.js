@@ -44,5 +44,6 @@ protectedRouter.delete("/api/carts/:cartId", cartController.remove)
 protectedRouter.get("/api/carts", cartController.get)
 
 protectedRouter.post("/api/orders", orderController.getTokenTransaction)
+protectedRouter.delete("/api/admin/orders/:orderId", orderController.remove)
 
 export default protectedRouter
