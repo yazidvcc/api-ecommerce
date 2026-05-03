@@ -28,6 +28,7 @@ model User {
 
   carts   Cart[]
   reviews Review[]
+  order   Order[]
 
   @@map("users")
 }
@@ -98,6 +99,7 @@ model ProductVariant {
 
   carts   Cart[]
   reviews Review[]
+  orderItem OrderItem[]
 
   @@map("product_variants")
 }
@@ -147,36 +149,46 @@ enum OrderStatus {
   CANCELLED
 }
 
-// model Order {
-//   id                Int           @id @default(autoincrement())
-//   user_id           Int
-//   address           String        @db.Text
-//   total_price       Int
-//   shipping_cost     Int
-//   payment_channel   String        @db.VarChar(50)
-//   shipping_services String        @db.VarChar(50)
-//   tracking_number   String        @db.VarChar(50)
-//   status            OrderStatus   @default(PENDING)
-//   createdAt         DateTime      @default(now())
-//   updatedAt         DateTime      @updatedAt
+enum PaymentStatus {
+  SUCCESS
+  PENDING
+  FAILED
+}
 
-//   user       User        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-//   orderItems OrderItem[]
+model Order {
+  id                String        @db.VarChar(300) @id
+  user_id           Int
+  address           String        @db.Text
+  total_price       Int
+  total_weight      Int
+  shipping_cost     Int
+  shipping_service  String        @db.VarChar(50)
+  shipping_name     String        @db.VarChar(50)
+  shipping_type     String        @db.VarChar(50)
+  payment_type      String?       @db.VarChar(50)
+  payment_status    PaymentStatus @default(PENDING)
+  tracking_number   String?       @db.VarChar(50)
+  status            OrderStatus   @default(PENDING)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
-//   @@map("orders")
-// }
+  user       User        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  orderItems OrderItem[]
 
-// model OrderItem {
-//   id                 Int      @id @default(autoincrement())
-//   order_id           Int
-//   product_variant_id Int
-//   quantity           Int      @db.SmallInt
-//   createdAt          DateTime @default(now())
-//   updatedAt          DateTime @updatedAt
+  @@map("orders")
+}
 
-//   order   Order          @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-//   product ProductVariant @relation(fields: [product_variant_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+model OrderItem {
+  id                 Int      @id @default(autoincrement())
+  order_id           String   @db.VarChar(300)
+  product_variant_id Int
+  quantity           Int      @db.SmallInt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-//   @@unique([order_id, product_variant_id])
-//   @@map("order_items")
-// }
+  order          Order          @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  productVariant ProductVariant @relation(fields: [product_variant_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([order_id, product_variant_id])
+  @@map("order_items")
+}
