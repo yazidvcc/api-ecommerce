@@ -29,5 +29,6 @@ publicRouter.get("/api/products/:productId/product-variants/:productVariantId", 
 
 publicRouter.get("/api/orders/destination-address", orderController.getDestinationAddress)
 publicRouter.post("/api/orders/shipping-cost", orderController.getShippingCost)
+publicRouter.post("/api/orders/notification", orderController.getNotification)
 
 export default publicRouter

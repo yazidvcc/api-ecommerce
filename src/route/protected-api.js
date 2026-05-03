@@ -7,6 +7,7 @@ import sizeController from "../controller/size-controller.js"
 import roleMiddleware from "../middleware/role-middleware.js"
 import productController from "../controller/product-controller.js"
 import cartController from "../controller/cart-controller.js"
+import orderController from "../controller/order-controller.js"
 
 const protectedRouter = express.Router()
 
@@ -38,5 +39,8 @@ protectedRouter.delete("/api/admin/products/:productId/product-variants/:product
 protectedRouter.post("/api/carts", cartController.create)
 protectedRouter.delete("/api/carts/:cartId", cartController.remove)
 protectedRouter.get("/api/carts", cartController.get)
+
+protectedRouter.post("/api/orders", orderController.getTokenTransaction)
+protectedRouter.get("/api/admin/orders", orderController.search)
 
 export default protectedRouter
