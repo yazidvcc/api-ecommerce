@@ -349,3 +349,70 @@ describe("GET /api/admin/orders", () => {
 
 
 })
+
+describe("GET /api/orders/orderId", () => {
+
+    beforeEach(async () => {
+        await prismaClient.orderItem.deleteMany()
+        await prismaClient.order.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.user.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.category.deleteMany()
+        await testUtil.createTestCustomer()
+        await testUtil.createTestAdmin()
+    })
+
+    it("should success get orders by admin", async () => {
+
+        const adminLogin = await testUtil.loginAdmin()
+
+        const order = await createTestOrder(2)
+
+        const dataOrder = await prismaClient.order.findFirst()
+
+        const response = await request(web).get(`/api/orders/${dataOrder.id}`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data.id).toBe(dataOrder.id)
+    },10000)
+
+    it("should success get orders by customer", async () => {
+
+        const customerLogin = await testUtil.loginCustomer()
+
+        const order = await createTestOrder(2)
+
+        const dataOrder = await prismaClient.order.findFirst()
+
+        const response = await request(web).get(`/api/orders/${dataOrder.id}`)
+            .set("Cookie", customerLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+        expect(response.body.data.id).toBe(dataOrder.id)
+    },10000)
+
+    it("should reject if order id is invalid", async () => {
+
+        const adminLogin = await testUtil.loginAdmin()
+
+        const order = await createTestOrder(2)
+
+        const response = await request(web).get(`/api/orders/invalid`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    },10000)
+
+
+})
