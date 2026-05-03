@@ -19,7 +19,7 @@ describe("POST /api/admin/products", () => {
     })
 
     it("Should success create product", async () => {
-        const adminLogin = await testUtil.login()   
+        const adminLogin = await testUtil.loginAdmin()   
         const category = await testUtil.createTestCategory()
         const productVariants = await testUtil.dummyManyProductVariant()
 
@@ -44,7 +44,7 @@ describe("POST /api/admin/products", () => {
     })
 
     it("Should reject if name is not provided", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const category = await testUtil.createTestCategory()
 
         const response = await request(web).post("/api/admin/products")
@@ -62,7 +62,7 @@ describe("POST /api/admin/products", () => {
     })
 
     it("Should reject if name already exist", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const category = await testUtil.createTestCategory()
         const product = await testUtil.createTestProduct()
 
@@ -99,7 +99,7 @@ describe("PUT /api/admin/products/productId", () => {
     })
 
     it("Should success update product", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProduct()
 
         const response = await request(web).put(`/api/admin/products/${product.id}`)
@@ -122,7 +122,7 @@ describe("PUT /api/admin/products/productId", () => {
     })
 
     it("Should reject if category id is not found", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProduct()
 
         const response = await request(web).put(`/api/admin/products/${product.id}`)
@@ -142,7 +142,7 @@ describe("PUT /api/admin/products/productId", () => {
     })
 
     it("Should reject if id product is not found", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProduct()
 
         const response = await request(web).put(`/api/admin/products/999`)
@@ -162,7 +162,7 @@ describe("PUT /api/admin/products/productId", () => {
     })
 
     it("Should success if name if same with old name", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProduct()
 
         const response = await request(web).put(`/api/admin/products/${product.id}`)
@@ -184,7 +184,7 @@ describe("PUT /api/admin/products/productId", () => {
     })
 
     it("should reject if name already exist", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProduct()
         const category = await testUtil.createTestCategory()
         const productVariants = await testUtil.dummyManyProductVariant()
@@ -234,7 +234,7 @@ describe("DELETE /api/admin/products/productId", () => {
     })
 
     it("Should success delete product", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProductVariant()
 
         const response = await request(web).delete(`/api/admin/products/${product.product_id}`)
@@ -247,7 +247,7 @@ describe("DELETE /api/admin/products/productId", () => {
     })
 
     it("Should reject if id product is not found", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).delete(`/api/admin/products/99999`)
             .set("Cookie", adminLogin.get("Set-Cookie"))
@@ -360,7 +360,7 @@ describe("PUT /api/admin/products/productId/product-variants/productVariantId", 
     })
 
     it("Should success update product variant", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const productVariant = await testUtil.createTestProductVariant()
 
         const response = await request(web).put(`/api/admin/products/${productVariant.product_id}/product-variants/${productVariant.id}`)
@@ -379,7 +379,7 @@ describe("PUT /api/admin/products/productId/product-variants/productVariantId", 
     })
 
     it("Should reject if product variant id is not found", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const productVariant = await testUtil.createTestProductVariant()
 
         const response = await request(web).put(`/api/admin/products/${productVariant.id}/product-variants/99999`)
@@ -397,7 +397,7 @@ describe("PUT /api/admin/products/productId/product-variants/productVariantId", 
     })
 
     it("Should reject stock or price is null", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const productVariant = await testUtil.createTestProductVariant()
 
         const response = await request(web).put(`/api/admin/products/${productVariant.id}/product-variants/99999`)
@@ -430,7 +430,7 @@ describe("DELETE /api/admin/products/productId/product-variants/productVariantId
     })
 
     it("Should success delete product variant", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProductVariant()
 
         const response = await request(web).delete(`/api/admin/products/${product.product_id}/product-variants/${product.id}`)
@@ -443,7 +443,7 @@ describe("DELETE /api/admin/products/productId/product-variants/productVariantId
     })
 
     it("Should reject if id product variant is not found", async () => {
-        const adminLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProductVariant()
 
         const response = await request(web).delete(`/api/admin/products/${product.product_id}/product-variants/99999`)

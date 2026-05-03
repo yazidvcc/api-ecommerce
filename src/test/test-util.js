@@ -1,4 +1,4 @@
-import prismaClient from "../application/database"
+import prismaClient from "../application/database.js"
 import bcrypt from "bcrypt"
 import request from "supertest"
 import { web } from "../application/web.js"
@@ -10,7 +10,7 @@ const createTestCustomer = async () => {
     return prismaClient.user.create({
         data: {
             password: password,
-            email: "yazid@gmail.com",
+            email: "yazidCustomer@gmail.com",
             name: "test",
             role: "CUSTOMER"
         }
@@ -24,18 +24,27 @@ const createTestAdmin = async () => {
     return prismaClient.user.create({
         data: {
             password: password,
-            email: "yazid@gmail.com",
+            email: "yazidAdmin@gmail.com",
             name: "test",
             role: "ADMIN"
         }
     })
 }
 
-const login = async () => {
+const loginAdmin = async () => {
     return await request(web).post("/api/users/login")
                 .set("Content-Type","application/json")
                 .send({
-                    email: "yazid@gmail.com",
+                    email: "yazidAdmin@gmail.com",
+                    password: "password"
+                })
+}
+
+const loginCustomer = async () => {
+    return await request(web).post("/api/users/login")
+                .set("Content-Type","application/json")
+                .send({
+                    email: "yazidCustomer@gmail.com",
                     password: "password"
                 })
 }
@@ -61,11 +70,7 @@ const createManyTestCategory = async () => {
     }
 
     return await prismaClient.category.createMany({
-        data: categories,
-        select: {
-            id: true,
-            name: true
-        }
+        data: categories
     })
 }
 
@@ -234,7 +239,7 @@ const dummyManyProductVariant = async () => {
             productVariants.push({
                 color_id: color.id,
                 size_id: size.id,
-                price: 100000,
+                price: 10000,
                 stock: 10,
                 weight: 1
             })
@@ -290,5 +295,6 @@ export default {
     createTestCart,
     createManyTestCarts,
     dummyManyProductVariant,
-    login
+    loginCustomer,
+    loginAdmin
 }

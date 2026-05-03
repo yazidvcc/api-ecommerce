@@ -16,10 +16,10 @@ describe("POST /api/admin/sizes", () => {
     })
 
     it("should success create size", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).post("/api/admin/sizes")
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     label: "XL"
                 })
@@ -31,10 +31,10 @@ describe("POST /api/admin/sizes", () => {
     })
 
     it("should reject if label is empty", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).post("/api/admin/sizes")
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     label: ""
                 })
@@ -48,10 +48,10 @@ describe("POST /api/admin/sizes", () => {
     it("should reject user is not admin", async () => {
         await prismaClient.user.deleteMany({})
         await testUtil.createTestCustomer()
-        const userLogin = await testUtil.login()
+        const customerLogin = await testUtil.loginCustomer()
 
         const response = await request(web).post("/api/admin/sizes")
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", customerLogin.get("Set-Cookie"))
                 .send({
                     name: ""
                 })
@@ -76,12 +76,12 @@ describe("PUT /api/admin/sizes/sizeId", () => {
     })
 
     it("should success update sizes", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const size = await testUtil.createTestSize()
 
         const response = await request(web).put(`/api/admin/sizes/${size.id}`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     label: "L"
                 })
@@ -93,12 +93,12 @@ describe("PUT /api/admin/sizes/sizeId", () => {
     })
 
     it("should reject if size is not found", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const size = await testUtil.createTestSize()
 
         const response = await request(web).put(`/api/admin/sizes/99999`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     label: "L"
                 })
@@ -110,12 +110,12 @@ describe("PUT /api/admin/sizes/sizeId", () => {
     })
 
     it("should reject if label size is number", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const size = await testUtil.createTestSize()
 
         const response = await request(web).put(`/api/admin/sizes/${size.id}`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
                 .send({
                     label: 111
                 })
@@ -138,12 +138,12 @@ describe("DELETE /api/admin/sizes/sizeId", () => {
     })
 
     it("should success delete sizes", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const size = await testUtil.createTestSize()
 
         const response = await request(web).delete(`/api/admin/sizes/${size.id}`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -152,10 +152,10 @@ describe("DELETE /api/admin/sizes/sizeId", () => {
     })
 
     it("should reject if size is not found", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).delete(`/api/admin/sizes/99999`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -175,12 +175,12 @@ describe("GET /api/sizes/sizeId", () => {
     })
 
     it("should success get size by id", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const size = await testUtil.createTestSize()
 
         const response = await request(web).get(`/api/sizes/${size.id}`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -189,10 +189,10 @@ describe("GET /api/sizes/sizeId", () => {
     })  
 
     it("should reject if size is not found", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const response = await request(web).get(`/api/sizes/999`)
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
@@ -213,18 +213,18 @@ describe("GET /api/sizes", () => {
     })
 
     it("should success search sizes", async () => {
-        const userLogin = await testUtil.login()
+        const adminLogin = await testUtil.loginAdmin()
 
         const sizes = await testUtil.createManyTestSizes()
 
         const response = await request(web).get("/api/sizes")
-                .set("Cookie", userLogin.get("Set-Cookie"))
+                .set("Cookie", adminLogin.get("Set-Cookie"))
 
         depth(response.body)
 
         expect(response.status).toBe(200)
-        expect(response.body.data.length).toBe(10)
-        expect(response.body.paging.total_item).toBe(10)
+        expect(response.body.data.length).toBe(6)
+        expect(response.body.paging.total_item).toBe(6)
         expect(response.body.paging.total_page).toBe(1)
     })
 

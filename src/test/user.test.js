@@ -206,14 +206,14 @@ describe("POST /api/users/login", () => {
         const response = await request(web).post("/api/users/login")
                                 .set("Content-Type","application/json")
                                 .send({
-                                    email: "yazid@gmail.com",
+                                    email: "yazidCustomer@gmail.com",
                                     password: "password"
                                 })
 
         depth(response.body)
 
         expect(response.status).toBe(200)
-        expect(response.body.data.email).toBe("yazid@gmail.com")
+        expect(response.body.data.email).toBe("yazidCustomer@gmail.com")
         expect(response.get("set-cookie")).toBeDefined()
     })
 
@@ -275,8 +275,8 @@ describe("POST /api/users/logout", () => {
 
     it("should success logout", async () => {
 
-        const userLogin = await testUtil.login()
-        const cookie = userLogin.get("Set-Cookie")
+        const customerLogin = await testUtil.loginCustomer()
+        const cookie = customerLogin.get("Set-Cookie")
         
         const response = await request(web).post("/api/users/logout")
                                 .set("Cookie", cookie)
@@ -310,8 +310,8 @@ describe("GET /api/users/current", () => {
 
     it("should success get current user", async () => {
         
-        const userLogin = await testUtil.login()
-        const cookie = userLogin.get("Set-Cookie")
+        const customerLogin = await testUtil.loginCustomer()
+        const cookie = customerLogin.get("Set-Cookie")
 
         const response = await request(web).get("/api/users/current")
                                 .set("Cookie", cookie)
@@ -319,7 +319,7 @@ describe("GET /api/users/current", () => {
         depth(response.body)
 
         expect(response.status).toBe(200)
-        expect(response.body.data.email).toBe("yazid@gmail.com")
+        expect(response.body.data.email).toBe("yazidCustomer@gmail.com")
     })
 
     it("should reject get current user if cookie is not found", async () => {
