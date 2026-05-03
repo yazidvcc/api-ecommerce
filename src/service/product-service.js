@@ -1,4 +1,3 @@
-import { request } from "express"
 import prismaClient from "../application/database"
 import ResponseError from "../error/response-error"
 import { createProductValidation, idProductValidation, idProductVariantValidation, removeProductVariantValidation, searchProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation"
@@ -331,7 +330,8 @@ const searchProductVariant = async (productId) => {
                         }
                     },
                     price: true,
-                    stock: true
+                    stock: true,
+                    weight: true
                 }
             }
         }
@@ -351,6 +351,7 @@ const getProductVariant = async ( productVariantId, productId) => {
         select: {
             id: true,
             price: true,
+            weight: true,
             stock: true,
             size: {
                 select: {
