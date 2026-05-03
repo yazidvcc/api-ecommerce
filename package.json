@@ -20,6 +20,7 @@
     "googleapis": "^171.4.0",
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
+    "midtrans-client": "^1.4.3",
     "redis": "^5.11.0",
     "uuid": "^13.0.0",
     "winston": "^3.19.0"
