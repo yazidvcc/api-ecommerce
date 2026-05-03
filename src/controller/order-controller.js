@@ -44,7 +44,7 @@ const getNotification = async (req, res, next) => {
 
 const search = async (req, res, next) => {
     try {
-        const result = await orderService.search(req.query)
+        const result = await orderService.search(req.user, req.query)
         res.status(200).json(result)
     } catch (e) {
         next(e)

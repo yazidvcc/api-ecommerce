@@ -17,6 +17,7 @@ protectedRouter.post("/api/users/logout", userController.logout)
 protectedRouter.get("/api/users/current", userController.get)
 
 protectedRouter.get("/api/orders/:orderId", orderController.get)
+protectedRouter.get("/api/orders", orderController.search)
 
 protectedRouter.use(roleMiddleware)
 
@@ -43,6 +44,5 @@ protectedRouter.delete("/api/carts/:cartId", cartController.remove)
 protectedRouter.get("/api/carts", cartController.get)
 
 protectedRouter.post("/api/orders", orderController.getTokenTransaction)
-protectedRouter.get("/api/admin/orders", orderController.search)
 
 export default protectedRouter

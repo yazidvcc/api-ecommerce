@@ -245,7 +245,7 @@ describe("POST /api/orders/notification", () => {
 
 })
 
-describe("GET /api/admin/orders", () => {
+describe("GET /api/orders", () => {
 
     beforeEach(async () => {
         await prismaClient.orderItem.deleteMany()
@@ -268,7 +268,7 @@ describe("GET /api/admin/orders", () => {
             const order = await createTestOrder(2)
         }
 
-        const response = await request(web).get("/api/admin/orders")
+        const response = await request(web).get("/api/orders")
             .set("Cookie", adminLogin.get("Set-Cookie"))
             .query({
                 page: 1,
@@ -289,7 +289,7 @@ describe("GET /api/admin/orders", () => {
             const order = await createTestOrder(2)
         }
 
-        const response = await request(web).get("/api/admin/orders")
+        const response = await request(web).get("/api/orders")
             .set("Cookie", adminLogin.get("Set-Cookie"))
             .query({
                 page: 1,
@@ -311,7 +311,7 @@ describe("GET /api/admin/orders", () => {
             const order = await createTestOrder(2)
         }
 
-        const response = await request(web).get("/api/admin/orders")
+        const response = await request(web).get("/api/orders")
             .set("Cookie", adminLogin.get("Set-Cookie"))
             .query({
                 page: 1,
@@ -333,7 +333,7 @@ describe("GET /api/admin/orders", () => {
             const order = await createTestOrder(2)
         }
 
-        const response = await request(web).get("/api/admin/orders")
+        const response = await request(web).get("/api/orders")
             .set("Cookie", adminLogin.get("Set-Cookie"))
             .query({
                 page: 1,

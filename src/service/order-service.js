@@ -257,13 +257,20 @@ const getNotification = async (request) => {
 
 }
 
-const search = async (request) => {
+const search = async (user, request) => {
     
     request = validate(searchOrderValidation, request)
 
     const skip = (request.page - 1) * request.size
 
     const filters = []
+
+    if (user.role === "CUSTOMER") {
+        filters.push({
+            user_id: user.id
+        })
+    }
+
     if (request.order_id) {
         filters.push({
             id: request.order_id
