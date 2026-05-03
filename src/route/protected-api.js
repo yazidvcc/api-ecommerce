@@ -16,6 +16,8 @@ protectedRouter.use(authMiddleware)
 protectedRouter.post("/api/users/logout", userController.logout)
 protectedRouter.get("/api/users/current", userController.get)
 
+protectedRouter.get("/api/orders/:orderId", orderController.get)
+
 protectedRouter.use(roleMiddleware)
 
 protectedRouter.post("/api/admin/categories", categoryController.create)

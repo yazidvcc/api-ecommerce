@@ -3,7 +3,7 @@ import ResponseError from "../error/response-error.js"
 import midtransClient from "midtrans-client"
 import prismaClient from "../application/database.js"
 import { v4 as uuid } from "uuid"
-import { createOrderValidation, searchOrderValidation } from "../validation/order-validation.js"
+import { createOrderValidation, idOrderValidation, searchOrderValidation } from "../validation/order-validation.js"
 import crypto from "crypto"
 
 const getDestinationAddress = async (request) => {
@@ -402,10 +402,80 @@ const search = async (request) => {
     }
 }
 
+const get = async (user, orderId) => {
+    
+    orderId = validate(idOrderValidation, orderId)
+
+    const filters = {
+        id: orderId
+    }
+
+    if (user.role === "CUSTOMER") {
+        filters.user_id = user.id
+    }
+
+    const order = await prismaClient.order.findFirst({
+        where: filters,
+        select: {
+            id: true,
+            user: {
+                select: {
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
+            address: true,
+            total_price: true,
+            total_weight: true,
+            shipping_cost: true,
+            shipping_service: true,
+            shipping_name: true,
+            shipping_type: true,
+            status: true,
+            payment_status: true,
+            tracking_number: true,
+            orderItems: {
+                select: {
+                    productVariant: {
+                        select: {
+                            product: {
+                                select: {
+                                    name: true
+                                }
+                            },
+                            size: {
+                                select: {
+                                    label: true
+                                }
+                            },
+                            color: {
+                                select: {
+                                    name: true
+                                }
+                            }
+                        }
+                    },
+                    quantity: true
+                }
+            },
+            createdAt: true,
+            updatedAt: true
+        }
+    })
+
+    if (!order) {
+        throw new ResponseError(404, "Order not found")
+    }
+
+    return order
+}
+
 export default {
     getDestinationAddress,
     getShippingCost,
     getTokenTransaction,
     getNotification,
-    search
+    search,
+    get
 }
