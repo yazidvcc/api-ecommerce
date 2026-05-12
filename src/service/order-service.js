@@ -160,8 +160,6 @@ const getTokenTransaction = async (user, request) => {
 
 const getNotification = async (request) => {
 
-    const hash = crypto.createHash('sha256').update(request.order_id + request.status_code + request.gross_amount + process.env.SERVER_KEY_MIDTRANS).digest('hex')
-
     const order = await prismaClient.order.findUnique({
         where: {
             id: request.order_id
@@ -171,6 +169,8 @@ const getNotification = async (request) => {
     if (!order) {
         throw new ResponseError(404, "Order not found")
     }
+
+    const hash = crypto.createHash('sha256').update(request.order_id + request.status_code + request.gross_amount + process.env.MIDTRANS_SERVER_KEY).digest('hex')
 
     if (hash !== request.signature_key) {
         await prismaClient.order.update({
@@ -257,13 +257,20 @@ const getNotification = async (request) => {
 
 }
 
-const search = async (request) => {
+const search = async (user, request) => {
     
     request = validate(searchOrderValidation, request)
 
     const skip = (request.page - 1) * request.size
 
     const filters = []
+
+    if (user.role === "CUSTOMER") {
+        filters.push({
+            user_id: user.id
+        })
+    }
+
     if (request.order_id) {
         filters.push({
             id: request.order_id
@@ -471,11 +478,36 @@ const get = async (user, orderId) => {
     return order
 }
 
+const remove = async (orderId) => {
+    
+    orderId = validate(idOrderValidation, orderId)
+
+    const order = await prismaClient.order.findFirst({
+        where: {
+            id: orderId,
+            payment_status: "FAILED"
+        }
+    })
+
+    if (!order) {
+        throw new ResponseError(404, "can't remove this order")
+    }
+
+    await prismaClient.order.delete({
+        where: {
+            id: orderId
+        }
+    })
+
+    return "Success remove this order"
+}
+
 export default {
     getDestinationAddress,
     getShippingCost,
     getTokenTransaction,
     getNotification,
     search,
-    get
+    get,
+    remove
 }

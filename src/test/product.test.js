@@ -533,3 +533,86 @@ describe("GET /api/admin/products/productId/product-variants/productVariantId", 
         expect(response.body.errors).toBeDefined()
     })
 })
+
+describe("POST /api/admin/products/productId/images", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestAdmin()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+    })
+
+    it("Should success upload image", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+        const product = await testUtil.createManyTestProductVariant()
+
+        const response = await request(web).post(`/api/admin/products/${product.id}/images`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "multipart/form-data")
+            .attach("main", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("test 1", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("test 2", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+
+        depth(response.body)
+
+        expect(response.status).toBe(201)
+    })
+
+    it("Should reject if file not received", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+        const product = await testUtil.createManyTestProductVariant()
+
+        const response = await request(web).post(`/api/admin/products/${product.id}/images`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "multipart/form-data")
+
+        depth(response.body)
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toBeDefined()
+    })
+
+    it("Should reject if product not found", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+
+        const response = await request(web).post(`/api/admin/products/9999/images`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "multipart/form-data")
+            .attach("main", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("additional", __dirname + "/suku cadang/contohlaporankerjapraktek.pdf")
+            .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+
+    it("Should reject if file mimetype not allowed", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+        const product = await testUtil.createTestProduct()
+
+        const response = await request(web).post(`/api/admin/products/${product.id}/images`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "multipart/form-data")
+            .attach("main", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("additional", __dirname + "/suku cadang/contohlaporankerjapraktek.pdf")
+            .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+
+        depth(response.body)
+
+        expect(response.status).toBe(400)
+        expect(response.body.errors).toBeDefined()
+    })
+})

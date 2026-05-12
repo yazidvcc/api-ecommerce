@@ -1,3 +1,4 @@
+import { parse } from "dotenv"
 import productService from "../service/product-service"
 
 const create = async (req, res, next) => {
@@ -111,6 +112,18 @@ const getProductVariant = async (req, res, next) => {
     }
 }
 
+const uploadImage = async (req, res, next) => {
+    try {
+        const productId = parseInt(req.params.productId)
+        const result = await productService.uploadImage(productId, req.files)
+        res.status(201).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 export default {
     create,
     update,
@@ -120,5 +133,6 @@ export default {
     updateProductVariant,
     removeProductVariant,
     searchProductVariant,
-    getProductVariant
+    getProductVariant,
+    uploadImage
 }
