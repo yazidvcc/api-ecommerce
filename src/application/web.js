@@ -8,7 +8,12 @@ import cors from 'cors'
 
 const web = express();
 web.use(express.json());
-web.use(expressFileUpload())
+web.use(expressFileUpload({
+    limits: {
+        fileSize: 2 * 1024 * 1024
+    },
+    abortOnLimit: true
+}))
 web.use(cookieParser());
 web.use(cors({
     origin: "http://localhost:5173"
