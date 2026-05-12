@@ -1,8 +1,10 @@
-import prismaClient from "../application/database"
-import ResponseError from "../error/response-error"
-import { createProductValidation, idProductValidation, idProductVariantValidation, removeProductVariantValidation, searchProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation"
-import validate from "../validation/validation"
-import redis from "../application/redis"
+import prismaClient from "../application/database.js"
+import ResponseError from "../error/response-error.js"
+import { createProductValidation, idProductValidation, idProductVariantValidation, removeProductVariantValidation, searchProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation.js"
+import validate from "../validation/validation.js"
+import path from "path"
+import { v4 as uuid } from "uuid"
+import minioClient from "../application/minio.js"
 
 const create = async (request) => {
 
@@ -24,7 +26,7 @@ const create = async (request) => {
         }
     }
 
-    request.product_variants = undefined
+    delete request.product_variants
 
     return await prismaClient.product.create({
         data: request,
@@ -286,7 +288,7 @@ const removeProductVariant = async (request) => {
 }
 
 const searchProductVariant = async (productId) => {
-    
+
     productId = validate(idProductValidation, productId)
 
     const countProductVariant = await prismaClient.product.count({
@@ -338,8 +340,8 @@ const searchProductVariant = async (productId) => {
     })
 }
 
-const getProductVariant = async ( productVariantId, productId) => {
-    
+const getProductVariant = async (productVariantId, productId) => {
+
     productVariantId = validate(idProductVariantValidation, productVariantId)
     productId = validate(idProductValidation, productId)
 
@@ -376,6 +378,151 @@ const getProductVariant = async ( productVariantId, productId) => {
 
 }
 
+const uploadImage = async (productId, files) => {
+
+    productId = validate(idProductValidation, productId)
+
+    const countInDatabase = await prismaClient.product.count({
+        where: {
+            id: productId
+        }
+    })
+
+    if (!countInDatabase) {
+        throw new ResponseError(404, "Product is not found")
+    }
+
+    if (!files || Object.keys(files).length === 0) {
+        throw new ResponseError(400, "Tidak ada file yang diunggah")
+    }
+
+    const allowedExtension = ['.jpg', '.jpeg', '.png', '.webp']
+    const allowedMimeType = ['image/jpeg', 'image/png', 'image/webp']
+
+    const productVariant = await prismaClient.productVariant.findMany({
+        where: {
+            product_id: productId
+        },
+        include: {
+            color: true
+        }
+    })
+
+    let color = productVariant.map(value => value.color.name)
+    color = [...new Set(color)]
+
+    let objects = []
+
+    await prismaClient.$transaction(async (tx) => {
+        for (const key in files) {
+            if (key === "additional") continue;
+
+            const fileExtension = path.extname(files[key].name).toLowerCase()
+            const mimeType = files[key].mimetype
+
+            const isValidFileExtension = allowedExtension.includes(fileExtension)
+            const isValidMimeType = allowedMimeType.includes(mimeType)
+
+            if (!isValidFileExtension && !isValidMimeType) {
+                throw new ResponseError(400, "Format file tidak diizinkan")
+            }
+
+            if (key === "main") {
+                const fileName = `product-${productId}/product-${productId}-main-${uuid()}${fileExtension}`
+                objects.push({
+                    fileName: fileName,
+                    fileBuffer: files[key].data,
+                    fileSize: files[key].size,
+                    fileMimeType: files[key].mimetype
+                })
+
+                await tx.productPhoto.create({
+                    data: {
+                        product_id: productId,
+                        url: fileName,
+                        is_main: true
+                    }
+                })
+                continue
+            }
+
+            if (color.includes(key)) {
+                const isArray = Array.isArray(files[key]) 
+
+                if (isArray) {
+                    throw new ResponseError(400, `Foto product warna ${key} hanya boleh satu`)
+                }
+
+                const fileName = `product-${productId}/product-${productId}-${key}-${uuid()}${fileExtension}`
+                objects.push({
+                    fileName: fileName,
+                    fileBuffer: files[key].data,
+                    fileSize: files[key].size,
+                    fileMimeType: files[key].mimetype
+                })
+
+                await tx.productPhoto.create({
+                    data: {
+                        product_id: productId,
+                        url: fileName,
+                        is_main: false
+                    }
+                })
+                continue
+            }
+        }
+
+        if (files.additional) {
+            const fileAddtionals = Array.isArray(files.additional) ? files.additional : [files.additional]
+
+            for (const value of fileAddtionals) {
+                const fileExtension = path.extname(value.name).toLowerCase()
+                const mimeType = value.mimetype
+
+                const isValidFileExtension = allowedExtension.includes(fileExtension)
+                const isValidMimeType = allowedMimeType.includes(mimeType)
+
+                if (!isValidFileExtension && !isValidMimeType) {
+                    throw new ResponseError(400, "Format file tidak diizinkan")
+                }
+
+                const fileName = `product-${productId}/product-${productId}-additional-${uuid()}${fileExtension}`
+                objects.push({
+                    fileName: fileName,
+                    fileBuffer: value.data,
+                    fileSize: value.size,
+                    fileMimeType: value.mimetype
+                })
+
+                await tx.productPhoto.create({
+                    data: {
+                        product_id: productId,
+                        url: fileName,
+                        is_main: false
+                    }
+                })
+            }
+        }
+    })
+
+    const bucket = process.env.MINIO_BUCKET_PRODUCT
+
+    await Promise.all(objects.map(async (obj) => {
+        await minioClient.putObject(
+            bucket, 
+            obj.fileName, 
+            obj.fileBuffer, 
+            obj.fileSize,
+            {
+                "Content-Type": obj.fileMimeType
+            }
+        )
+    }))
+
+    return objects
+
+}
+
 export default {
     create,
     update,
@@ -385,5 +532,6 @@ export default {
     updateProductVariant,
     removeProductVariant,
     searchProductVariant,
-    getProductVariant
+    getProductVariant,
+    uploadImage
 }
