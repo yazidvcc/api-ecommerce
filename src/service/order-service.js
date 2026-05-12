@@ -160,8 +160,6 @@ const getTokenTransaction = async (user, request) => {
 
 const getNotification = async (request) => {
 
-    const hash = crypto.createHash('sha256').update(request.order_id + request.status_code + request.gross_amount + process.env.SERVER_KEY_MIDTRANS).digest('hex')
-
     const order = await prismaClient.order.findUnique({
         where: {
             id: request.order_id
@@ -171,6 +169,8 @@ const getNotification = async (request) => {
     if (!order) {
         throw new ResponseError(404, "Order not found")
     }
+
+    const hash = crypto.createHash('sha256').update(request.order_id + request.status_code + request.gross_amount + process.env.MIDTRANS_SERVER_KEY).digest('hex')
 
     if (hash !== request.signature_key) {
         await prismaClient.order.update({
