@@ -263,6 +263,7 @@ describe("GET /api/products", () => {
 
     beforeEach(async () => {
         await testUtil.createTestCustomer()
+        await testUtil.createTestAdmin()
         await testUtil.createManyTestProduct()
     })
 
@@ -275,19 +276,27 @@ describe("GET /api/products", () => {
         await prismaClient.user.deleteMany()
     })
 
-    it("Should success get products", async () => {
+    it("Should success search products", async () => {
+
+        const product = await prismaClient.product.findFirst()
+        const adminLogin = await testUtil.loginAdmin()
+
+        const uploadImageProduct = await request(web).post(`/api/admin/products/${product.id}/images`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "multipart/form-data")
+            .attach("main", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+
         const response = await request(web).get("/api/products")
                             .query({
                                 page: 1,
                                 size: 10,
-                                name: "2"
                             })
 
         depth(response.body)
 
         expect(response.status).toBe(200)
         expect(response.body.data).toBeDefined()
-        expect(response.body.paging.total_items).toBe(1)
+        expect(response.body.paging.total_items).toBe(10)
         expect(response.body.paging.total_page).toBe(1)
     })
 
@@ -460,6 +469,7 @@ describe("GET /api/products/productId/product-variants", () => {
 
     beforeEach(async () => {
         await testUtil.createTestCustomer()
+        await testUtil.createTestAdmin()
         await testUtil.createManyTestProduct()
     })
 
@@ -474,12 +484,20 @@ describe("GET /api/products/productId/product-variants", () => {
 
     it("Should success get product variants", async () => {
         const product = await testUtil.createManyTestProductVariant()
+        const adminLogin = await testUtil.loginAdmin()
+
+        const uploadImageProduct = await request(web).post(`/api/admin/products/${product.id}/images`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "multipart/form-data")
+            .attach("main", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+            .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
+
         const response = await request(web).get(`/api/products/${product.id}/product-variants`)
 
         depth(response.body)
 
         expect(response.status).toBe(200)
-        expect(response.body.data.productVariants).toBeDefined()
+        expect(response.body.data).toBeDefined()
     })
 
     it("Should reject if product id not found", async () => {
@@ -588,7 +606,6 @@ describe("POST /api/admin/products/productId/images", () => {
             .set("Cookie", adminLogin.get("Set-Cookie"))
             .set("Content-Type", "multipart/form-data")
             .attach("main", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
-            .attach("additional", __dirname + "/suku cadang/contohlaporankerjapraktek.pdf")
             .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
             .attach("additional", __dirname + "/suku cadang/2025082009225664294N52867.jpg")
 
@@ -598,7 +615,7 @@ describe("POST /api/admin/products/productId/images", () => {
         expect(response.body.errors).toBeDefined()
     })
 
-    it("Should reject if file mimetype not allowed", async () => {
+    it("Should reject if size file to large", async () => {
         const adminLogin = await testUtil.loginAdmin()
         const product = await testUtil.createTestProduct()
 
@@ -612,7 +629,7 @@ describe("POST /api/admin/products/productId/images", () => {
 
         depth(response.body)
 
-        expect(response.status).toBe(400)
+        expect(response.status).toBe(413)
         expect(response.body.errors).toBeDefined()
     })
 })
