@@ -18,6 +18,8 @@ async function initBucket() {
     }
 }
 
-await initBucket()
+(async () => {
+    await initBucket()
+})()
 
 export default minioClient
