@@ -135,15 +135,46 @@ const search = async (request) => {
         take: request.size,
         orderBy: {
             createdAt: "desc"
+        },
+        include: {
+            productPhotos: {
+                where: {
+                    is_main: true
+                },
+                select: {
+                    url: true
+                }
+            }
         }
     })
+
+    const productFinal = await Promise.all(products.map(async (product) => {
+
+        if (product.productPhotos.length === 0) {
+            delete product.productPhotos
+            return {
+                ...product,
+                url: null
+            }
+        }
+
+        const bucket = process.env.MINIO_BUCKET_PRODUCT
+        const presignedUrl = await minioClient.presignedGetObject(bucket, product.productPhotos[0].url, 60 * 60)
+
+        delete product.productPhotos
+
+        return {
+            ...product,
+            url: presignedUrl
+        }
+    }))
 
     const count = await prismaClient.product.count({
         where: where
     })
 
     return {
-        data: products,
+        data: productFinal,
         paging: {
             page: request.page,
             total_page: Math.ceil(count / request.size),
@@ -301,7 +332,7 @@ const searchProductVariant = async (productId) => {
         throw new ResponseError(404, "Product variant not found")
     }
 
-    return await prismaClient.product.findUnique({
+    const products = await prismaClient.product.findUnique({
         where: {
             id: productId
         },
@@ -335,9 +366,28 @@ const searchProductVariant = async (productId) => {
                     stock: true,
                     weight: true
                 }
-            }
+            },
+            productPhotos: true
         }
     })
+
+    if (products.productPhotos.length > 0) {
+        const urlPhoto = await Promise.all(products.productPhotos.map(
+            async (photo) => {
+                const bucket = process.env.MINIO_BUCKET_PRODUCT
+                const presignedUrl = await minioClient.presignedGetObject(bucket, photo.url, 60 * 60)
+
+                return {
+                    ...photo,
+                    url: presignedUrl
+                }
+            }
+        ))
+
+        products.productPhotos = urlPhoto
+    }
+
+    return products
 }
 
 const getProductVariant = async (productVariantId, productId) => {
@@ -447,7 +497,7 @@ const uploadImage = async (productId, files) => {
             }
 
             if (color.includes(key)) {
-                const isArray = Array.isArray(files[key]) 
+                const isArray = Array.isArray(files[key])
 
                 if (isArray) {
                     throw new ResponseError(400, `Foto product warna ${key} hanya boleh satu`)
@@ -509,9 +559,9 @@ const uploadImage = async (productId, files) => {
 
     await Promise.all(objects.map(async (obj) => {
         await minioClient.putObject(
-            bucket, 
-            obj.fileName, 
-            obj.fileBuffer, 
+            bucket,
+            obj.fileName,
+            obj.fileBuffer,
             obj.fileSize,
             {
                 "Content-Type": obj.fileMimeType
