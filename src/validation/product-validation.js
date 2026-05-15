@@ -11,7 +11,7 @@ const createProductValidation = Joi.object({
         price: Joi.number().positive().required(),
         stock: Joi.number().positive().required(),
         weight: Joi.number().positive().required()
-    })).required()
+    })).unique((a, b) => a.color_id === b.color_id && a.size_id === b.size_id).required()
 })
 
 const updateProductValidation = Joi.object({
