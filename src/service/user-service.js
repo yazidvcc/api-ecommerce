@@ -117,7 +117,8 @@ const googleAuthorized = async (code) => {
     return {
         data: {
             id: user.id,
-            email: user.email
+            email: user.email,
+            role: user.role
         },
         token: token
     }
@@ -135,6 +136,10 @@ const login = async (request) => {
 
     if (!user) {
         throw new ResponseError(401, "email or password is wrong")
+    }
+
+    if (!user.password) {
+        throw new ResponseError(400, "your gmail just available login with google, please press the button 'sign in with google'")
     }
 
     const isPasswordValid = await bcrypt.compare(request.password, user.password)
@@ -166,7 +171,8 @@ const login = async (request) => {
     return {
         data: {
             id: user.id,
-            email: user.email
+            email: user.email,
+            role: user.role
         },
         token: token
     }
@@ -195,7 +201,8 @@ const get = async (userId) => {
             id: true,
             name: true,
             email: true,
-            phone: true
+            phone: true,
+            role: true
         }
     })
 }
