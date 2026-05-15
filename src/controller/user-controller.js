@@ -27,9 +27,7 @@ const googleCallback = async (req, res, next) => {
             sameSite: "strict",
             maxAge: 7 * 24 * 60 * 60 * 1000
         })
-        res.status(200).json({
-            data: result.data
-        })
+        res.redirect("http://localhost:5173/")
     } catch (e) {
         next(e)
     }
