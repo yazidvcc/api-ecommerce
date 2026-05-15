@@ -1,7 +1,7 @@
-import validate from "../validation/validation"
-import { createCartValidation, idCartValidation } from "../validation/cart-validation"
-import prismaClient from "../application/database"
-import ResponseError from "../error/response-error"
+import validate from "../validation/validation.js"
+import { createCartValidation, idCartValidation } from "../validation/cart-validation.js"
+import prismaClient from "../application/database.js"
+import ResponseError from "../error/response-error.js"
 
 const create = async (userId, request) => {
 
