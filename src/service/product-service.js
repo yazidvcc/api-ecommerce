@@ -144,7 +144,8 @@ const search = async (request) => {
                 select: {
                     url: true
                 }
-            }
+            },
+            category: true
         }
     })
 
