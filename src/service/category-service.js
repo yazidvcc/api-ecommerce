@@ -37,7 +37,12 @@ const update = async (request) => {
     }
 
     const checkCategoryName = await prismaClient.category.count({
-        where: { name: category.name }
+        where: { 
+            name: category.name,
+            id: {
+                not: category.id
+            }
+        }
     });
 
     if (checkCategoryName === 1) {
