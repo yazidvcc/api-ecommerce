@@ -363,6 +363,7 @@ const searchProductVariant = async (productId) => {
                             label: true
                         }
                     },
+                    id: true,
                     price: true,
                     stock: true,
                     weight: true
