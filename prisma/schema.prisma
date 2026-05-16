@@ -49,14 +49,14 @@ enum ProductGender {
 
 model Product {
   id          Int           @id @default(autoincrement())
-  category_id Int
+  category_id Int?
   name        String        @db.VarChar(255)
   gender      ProductGender
   description String        @db.Text
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  category        Category         @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  category        Category?         @relation(fields: [category_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
   productVariants ProductVariant[]
   productPhotos   ProductPhoto[]
 
