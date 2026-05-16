@@ -112,6 +112,19 @@ const getProductVariant = async (req, res, next) => {
     }
 }
 
+const createProductVariant = async (req, res, next) => {
+    try {
+        const productId = parseInt(req.params.productId)
+        req.body.product_id = productId
+        const result = await productService.createProductVariant(req.body)
+        res.status(200).json({
+            data: result
+        })
+    } catch (e) {
+        next(e)
+    }
+}
+
 const uploadImage = async (req, res, next) => {
     try {
         const productId = parseInt(req.params.productId)
@@ -134,5 +147,6 @@ export default {
     removeProductVariant,
     searchProductVariant,
     getProductVariant,
+    createProductVariant,
     uploadImage
 }

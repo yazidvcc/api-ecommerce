@@ -36,6 +36,7 @@ protectedRouter.delete("/api/admin/sizes/:sizeId", sizeController.remove)
 protectedRouter.post("/api/admin/products", productController.create)
 protectedRouter.put("/api/admin/products/:productId", productController.update)
 protectedRouter.delete("/api/admin/products/:productId", productController.remove)
+protectedRouter.post("/api/admin/products/:productId/product-variants", productController.createProductVariant)
 protectedRouter.put("/api/admin/products/:productId/product-variants/:productVariantId", productController.updateProductVariant)
 protectedRouter.delete("/api/admin/products/:productId/product-variants/:productVariantId", productController.removeProductVariant)
 
