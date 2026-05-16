@@ -2,6 +2,7 @@ import validate from "../validation/validation.js"
 import { createCartValidation, idCartValidation } from "../validation/cart-validation.js"
 import prismaClient from "../application/database.js"
 import ResponseError from "../error/response-error.js"
+import minioClient from "../application/minio.js"
 
 const create = async (userId, request) => {
 
@@ -40,7 +41,7 @@ const create = async (userId, request) => {
 }
 
 const remove = async (cartId) => {
-    
+
     cartId = validate(idCartValidation, cartId)
 
     const count = await prismaClient.cart.count({
@@ -61,7 +62,7 @@ const remove = async (cartId) => {
 }
 
 const get = async (userId) => {
-    return await prismaClient.cart.findMany({
+    const cart = await prismaClient.cart.findMany({
         where: {
             user_id: userId
         },
@@ -78,7 +79,7 @@ const get = async (userId) => {
                             name: true,
                             productPhotos: {
                                 where: {
-                                 is_main: true   
+                                    is_main: true
                                 },
                                 take: 1,
                                 select: {
@@ -103,6 +104,18 @@ const get = async (userId) => {
             }
         }
     })
+
+    return await Promise.all(cart.map(async (item) => {
+        if (item.productVariant.product.productPhotos.length > 0) {
+            const bucket = process.env.MINIO_BUCKET_PRODUCT
+            const presignedUrl = await minioClient.presignedGetObject(bucket, item.productVariant.product.productPhotos[0].url, 60 * 60)
+
+            item.productVariant.product.productPhotos[0].url = presignedUrl
+
+            return item
+        }
+        return item
+    }))
 }
 
 export default {
