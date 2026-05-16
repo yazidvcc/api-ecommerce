@@ -59,7 +59,7 @@ const getShippingCost = async (request) => {
 
 const getTokenTransaction = async (user, request) => {
 
-    request = validate(createOrderValidation, request)
+request = validate(createOrderValidation, request)
 
     const order = await prismaClient.$transaction(async (tx) => {
         let total_price = 0
