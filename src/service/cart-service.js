@@ -73,6 +73,7 @@ const get = async (userId) => {
                 select: {
                     id: true,
                     price: true,
+                    weight: true,
                     product: {
                         select: {
                             id: true,
