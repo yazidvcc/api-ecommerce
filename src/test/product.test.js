@@ -633,3 +633,101 @@ describe("POST /api/admin/products/productId/images", () => {
         expect(response.body.errors).toBeDefined()
     })
 })
+
+describe("POST /api/admin/products/:productId/product-variants", () => {
+
+    beforeEach(async () => {
+        await testUtil.createTestAdmin()
+    })
+
+    afterEach(async () => {
+        await prismaClient.user.deleteMany()
+        await prismaClient.productVariant.deleteMany()
+        await prismaClient.color.deleteMany()
+        await prismaClient.size.deleteMany()
+        await prismaClient.product.deleteMany()
+        await prismaClient.category.deleteMany()
+    })
+
+    it("Should success add product variant in product", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+        const product = await testUtil.createTestProduct()
+        const size = await testUtil.createTestSize()
+        const color = await testUtil.createTestColor()
+
+        const response = await request(web).post(`/api/admin/products/${product.id}/product-variants`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "application/json")
+            .send({
+                product_id: product.id,
+                size_id: size.id,
+                color_id: color.id,
+                price: 200000,
+                stock: 10,
+                weight: 300
+            })
+
+        depth(response.body)
+
+        expect(response.status).toBe(200)
+    })
+
+    it("Should reject if product, color, or size id is not found", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+        const product = await testUtil.createTestProduct()
+        const size = await testUtil.createTestSize()
+
+        const response = await request(web).post(`/api/admin/products/${product.id}/product-variants`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "application/json")
+            .send({
+                product_id: product.id,
+                size_id: size.id,
+                color_id: 9999,
+                price: 200000,
+                stock: 10,
+                weight: 300
+            })
+
+        depth(response.body)
+
+        expect(response.status).toBe(404)
+        expect(response.body.errors).toBeDefined()
+    })
+
+    it("Should reject if product variant to be exist", async () => {
+        const adminLogin = await testUtil.loginAdmin()
+        const product = await testUtil.createTestProduct()
+        const size = await testUtil.createTestSize()
+        const color = await testUtil.createTestColor()
+
+        const response = await request(web).post(`/api/admin/products/${product.id}/product-variants`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "application/json")
+            .send({
+                product_id: product.id,
+                size_id: size.id,
+                color_id: color.id,
+                price: 200000,
+                stock: 10,
+                weight: 300
+            })
+
+        const response2 = await request(web).post(`/api/admin/products/${product.id}/product-variants`)
+            .set("Cookie", adminLogin.get("Set-Cookie"))
+            .set("Content-Type", "application/json")
+            .send({
+                product_id: product.id,
+                size_id: size.id,
+                color_id: color.id,
+                price: 200000,
+                stock: 10,
+                weight: 300
+            })
+
+        depth(response2.body)
+
+        expect(response2.status).toBe(400)
+        expect(response2.body.errors).toBeDefined()
+    })
+})

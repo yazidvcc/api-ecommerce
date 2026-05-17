@@ -1,6 +1,6 @@
 import prismaClient from "../application/database.js"
 import ResponseError from "../error/response-error.js"
-import { createProductValidation, idProductValidation, idProductVariantValidation, removeProductVariantValidation, searchProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation.js"
+import { createProductValidation, createProductVariantValidaiton, idProductValidation, idProductVariantValidation, removeProductVariantValidation, searchProductValidation, updateProductValidation, updateProductVariantValidation } from "../validation/product-validation.js"
 import validate from "../validation/validation.js"
 import path from "path"
 import { v4 as uuid } from "uuid"
@@ -430,6 +430,48 @@ const getProductVariant = async (productVariantId, productId) => {
 
 }
 
+const createProductVariant = async (request) => {
+    
+    request = validate(createProductVariantValidaiton, request)
+
+    const resultCount = await Promise.all([
+    prismaClient.product.count({
+        where: {
+            id: request.product_id
+        }
+    }), 
+    prismaClient.color.count({
+        where: {
+            id: request.color_id
+        }
+    }), 
+    prismaClient.size.count({
+        where: {
+            id: request.size_id
+        }
+    })])
+
+    if (resultCount.includes(0)) {
+        throw new ResponseError(404, "data product, color, and size can't null");
+    }
+
+    const countInDatabase = await prismaClient.productVariant.count({
+        where: {
+            product_id: request.product_id,
+            size_id: request.size_id,
+            color_id: request.color_id
+        }
+    })
+
+    if (countInDatabase) {
+        throw new ResponseError(400, "Product variant already exist")
+    }
+
+    return await prismaClient.productVariant.create({
+        data: request
+    })
+}
+
 const uploadImage = async (productId, files) => {
 
     productId = validate(idProductValidation, productId)
@@ -585,5 +627,6 @@ export default {
     removeProductVariant,
     searchProductVariant,
     getProductVariant,
+    createProductVariant,
     uploadImage
 }
